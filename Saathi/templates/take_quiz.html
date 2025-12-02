@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Saathi - Quiz</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#fe7474",
+            "background-light": "#ffffff",
+            "background-dark": "#0D0F14",
+            "accent-1": "#c7b7ff",
+            secondary: "#ffa8a8",
+            "text-main": "#ffffff",
+            "text-light": "#1f2937",
+            "text-dark": "#ffffff",
+          },
+          fontFamily: {
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "8px",
+          },
+        },
+      },
+    };
+    </script>
+</head>
+<body class="font-display bg-background-dark text-text-dark antialiased">
+<div class="flex flex-col min-h-screen">
+<header class="w-full px-4 sm:px-6 lg:px-8 py-6 sticky top-0 bg-background-dark/80 backdrop-blur-sm z-10">
+<nav class="flex items-center justify-between">
+<a class="flex items-center space-x-2" href="{% url 'saathi:home' %}">
+<img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="font-bold text-xl text-text-dark">Saathi</span>
+</a>
+<div class="hidden md:flex items-center justify-center flex-1 space-x-6">
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:chat' %}">Chat</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:quiz_gen' %}">Make a Quiz</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:progress' %}">Progress</a>
+</div>
+<div class="hidden md:flex items-center space-x-6">
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:home' %}">Home</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:contact' %}">Contact Us</a>
+</div>
+<button class="md:hidden">
+<span class="material-icons-outlined text-text-dark">menu</span>
+</button>
+</nav>
+</header>
+<main class="flex-grow w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+<form id="form" method="POST" action="{% url 'saathi:submit_quiz' %}">
+{% csrf_token %}
+<div class="space-y-12">
+{% for question in questions %}
+<div class="bg-[#13161d] border border-gray-800 rounded-lg p-6 sm:p-8 shadow-lg">
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 w-8 h-8 bg-accent-1/10 text-accent-1 rounded-full flex items-center justify-center font-bold text-sm">
+                        {{ forloop.counter }}
+                    </div>
+<div class="flex-grow">
+<h2 class="text-xl md:text-2xl font-bold text-text-main mb-6">{{ question.question|safe }}</h2>
+<div class="space-y-3">
+{% for option in question.options %}
+<label class="flex items-center p-4 bg-gray-900/40 border border-gray-700 rounded-md cursor-pointer hover:bg-gray-800/60 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+<input class="sr-only" name="question{{ forloop.parentloop.counter }}" type="radio" value="{{ forloop.counter }}" required/>
+<span class="w-5 h-5 rounded-full border-2 border-gray-600 flex-shrink-0 mr-4 grid place-items-center after:content-[''] after:w-2.5 after:h-2.5 after:rounded-full after:bg-primary after:scale-0 checked:after:scale-100 transition-transform"></span>
+<span class="text-gray-300">{{ option|safe }}</span>
+</label>
+{% endfor %}
+</div>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+<div class="mt-12 flex justify-center">
+<button id="submit-btn" type="submit" class="px-8 py-3 bg-primary text-background-dark font-bold rounded-DEFAULT shadow-lg hover:opacity-90 transition-opacity">
+Submit Quiz
+</button>
+</div>
+</form>
+</main>
+<footer class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-auto border-t border-gray-800">
+<div class="flex flex-col sm:flex-row items-center justify-between">
+<div class="flex items-center space-x-2">
+<img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="font-bold text-xl text-text-dark">Saathi</span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mt-4 sm:mt-0">
+                © 2025 Saathi. All rights reserved.
+            </p>
+</div>
+</footer>
+</div>
+<script>
+
+
+    const button = document.getElementById('submit-btn');
+    const form = document.getElementById('form');
+
+    function validateRadioGroups(form) {
+      const radioInputs = form.querySelectorAll('input[type="radio"].sr-only');
+
+
+      const radioGroups = {};
+      radioInputs.forEach(radio => {
+        const name = radio.name;
+        if (!radioGroups[name]) {
+          radioGroups[name] = [];
+        }
+        radioGroups[name].push(radio);
+      });
+
+
+      const unansweredGroups = [];
+      for (const [name, radios] of Object.entries(radioGroups)) {
+        const hasChecked = radios.some(radio => radio.checked);
+        if (!hasChecked) {
+          unansweredGroups.push(name);
+        }
+      }
+
+      if (unansweredGroups.length > 0) {
+        console.log('Unanswered questions:', unansweredGroups);
+        return false;
+      }
+
+      return true;
+    }
+
+     form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        let can_submit = validateRadioGroups(form);
+
+        if (can_submit)
+        {
+            button.disabled = true;
+            button.textContent = 'Submitting...';
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+            form.submit();
+        }
+        else
+        {
+            alert('Please answer all questions before submitting.');
+        }
+
+    });
+
+
+</script>
+</body></html>

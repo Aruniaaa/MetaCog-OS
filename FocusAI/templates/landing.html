@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FocusAI - AI-Powered Cognitive Discipline System</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<style type="text/tailwindcss">
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+    :root {
+      --bg-dark-cognitive-void: #0D0F14;
+      --primary-deep-neural-blue: #fe7474;
+      --accent-1-midnight-indigo: #c7b7ff;
+      --secondary-synapse-pink: #ffa8a8;
+      --text-main-cognitive-ink: #ffffff;
+    }
+    .gradient-bg {
+      background-image: radial-gradient(circle at top, rgba(254, 116, 116, 0.1), transparent 40%);
+    }
+    .card-gradient-bg {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+  </style>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background-dark": "var(--bg-dark-cognitive-void)",
+            "primary": "var(--primary-deep-neural-blue)",
+            "accent-1": "var(--accent-1-midnight-indigo)",
+            "secondary": "var(--secondary-synapse-pink)",
+            "text-main": "var(--text-main-cognitive-ink)",
+          },
+          fontFamily: {
+            display: ["Lexend", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0.5rem",
+            lg: '0.75rem',
+            xl: '1rem',
+          },
+        },
+      },
+    };
+  </script>
+<style>
+    body {
+      font-family: 'Lexend', sans-serif;
+    }
+    .icon-bg {
+      background-color: rgba(254, 116, 116, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-background-dark text-gray-300 antialiased font-display">
+<div class="w-full">
+  <header class="absolute top-0 left-0 right-0 z-10 px-4 sm:px-6 lg:px-8">
+  <div class="flex h-20 items-center justify-between">
+
+    <!-- Logo Section -->
+    <div class="flex items-center gap-4">
+      <img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
+      <h1 class="text-xl font-bold tracking-tight">FocusAI</h1>
+    </div>
+
+    <!-- Center Navigation -->
+    <nav class="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
+      <div class="flex items-center gap-8">
+          <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'focusai:timer' %}">Timer</a>
+        <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'focusai:summarization' %}">Summarization</a>
+        <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'focusai:to-do' %}">To-Do</a>
+        <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'focusai:stats' %}">Stats</a>
+      </div>
+    </nav>
+
+        <div id="top-right" class="hidden md:flex items-center gap-3 justify-end">
+            {% if not username %}
+              <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'focusai:login' %}">Log In</a>
+              <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'focusai:signup' %}">Sign Up</a>
+            {% else %}
+              <span id="logged-in" class="text-sm text-white/80">Logged in as <strong>{{ username }}</strong></span>
+              <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'focusai:contact' %}">Contact Us</a>
+              <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'focusai:logout' %}">Log Out</a>
+            {% endif %}
+          </div>
+        </div>
+</header>
+
+<main>
+<section class="py-20 lg:py-40 text-center relative overflow-hidden">
+<div class="absolute inset-0 gradient-bg"></div>
+<div class="container mx-auto max-w-4xl px-4 relative z-10">
+<h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold text-text-main leading-tight">
+            Your AI-Powered <br class="hidden sm:block"/>
+<span class="text-primary">Cognitive Discipline</span> System
+          </h1>
+<p class="mt-6 text-lg text-gray-400">Reclaim your focus. Reclaim your future.</p>
+<p class="mt-4 max-w-2xl mx-auto text-gray-400">
+            AI-powered productivity system that prevents smartphone distractions in real-time while providing <span class="text-accent-1 font-medium">statistical insights</span> to help you focus sessions and <span class="text-accent-1 font-medium">minimize</span> doomscrolling.
+          </p>
+<div class="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
+<a class="bg-primary text-gray-900 font-semibold py-3 px-6 rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2 w-full sm:w-auto justify-center" href="{% url 'focusai:timer' %}">
+              Start a focus session
+              <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+<a class="bg-gray-800/50 text-text-main font-medium py-3 px-6 rounded-lg shadow-sm border border-gray-700 hover:bg-gray-700/60 transition-colors w-full sm:w-auto justify-center" href="#features">
+              Explore Features
+            </a>
+</div>
+</div>
+</section>
+<section class="py-20 lg:py-24">
+<div class="container mx-auto max-w-5xl px-4">
+<div id="features" class="text-center mb-16">
+<h2 class="text-4xl lg:text-5xl font-bold text-text-main">Powerful Features</h2>
+<p class="mt-4 text-lg text-gray-400">Everything you need to maintain peak cognitive performance</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="card-gradient-bg p-8 rounded-xl border border-white/10">
+<div class="icon-bg w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">phone_iphone</span>
+</div>
+<h3 class="text-xl font-bold text-text-main mb-2">Real-time Distraction Detection</h3>
+<p class="text-gray-400 mb-6">AI-powered computer vision detects phone usage during focus sessions with instant accountability. Tab switching while focusing also automatically pauses the timer.</p>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Instant alerts</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Timer pause</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Real-time intervention</span>
+</div>
+</div>
+<div class="card-gradient-bg p-8 rounded-xl border border-white/10">
+<div class="icon-bg w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">bar_chart_4_bars</span>
+</div>
+<h3 class="text-xl font-bold text-text-main mb-2">Comprehensive Analytics</h3>
+<p class="text-gray-400 mb-6">Weekly focus data visualization with performance insights. Track your best and worst days, analyze session durations, and view focus-to-distraction ratios.</p>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Bar graphs</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Performance comparison</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Interactive charts</span>
+</div>
+</div>
+<div class="card-gradient-bg p-8 rounded-xl border border-white/10">
+<div class="icon-bg w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">checklist</span>
+</div>
+<h3 class="text-xl font-bold text-text-main mb-2">Built-In To-Do List</h3>
+<p class="text-gray-400 mb-6">Eliminate app-switching with integrated task management. Keep your workflow seamless while developing essential time management skills.</p>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">No app-switching</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Seamless workflow</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Skill development</span>
+</div>
+</div>
+<div class="card-gradient-bg p-8 rounded-xl border border-white/10">
+<div class="icon-bg w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">description</span>
+</div>
+<h3 class="text-xl font-bold text-text-main mb-2">AI Text Summarization</h3>
+<p class="text-gray-400 mb-6">Powered by Google Gemini 2.5 Flash to instantly summarize lengthy texts and documents. Perfect for research and study sessions.</p>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Local processing</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Instant results</span>
+<span class="text-xs font-medium bg-gray-800/80 text-gray-300 py-1 px-3 rounded-full">Research-ready</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-background-dark py-16 border-t border-white/10 mt-10">
+<div class="container mx-auto max-w-5xl px-4 text-center">
+<a class="flex items-center justify-center gap-2 mb-4" href="#">
+<img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
+<span class="text-xl font-bold text-text-main">FocusAI</span>
+</a>
+<p class="text-sm text-gray-400 mb-6">Part of <a class="font-semibold text-accent-1 hover:underline" href="{% url 'portal:home' %}">MetaCog</a></p>
+<div class="flex justify-center gap-6 mb-8 text-sm text-gray-400">
+<a class="hover:text-text-main transition-colors" href="#features">Features</a>
+<a class="hover:text-text-main transition-colors" href="{% url 'saathi:contact' %}">Contact</a>
+</div>
+<p class="text-sm text-gray-500">© 2025 FocusAI by MetaCog. All rights reserved.</p>
+</div>
+</footer>
+</div>
+<script src="{% static 'scripts/landing.js' %}"></script>
+</body></html>

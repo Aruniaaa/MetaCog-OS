@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Saathi</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#fe7474",
+            "background-light": "#ffffff",
+            "background-dark": "#0D0F14",
+            "accent-1": "#c7b7ff",
+            secondary: "#ffa8a8",
+            "text-main": "#ffffff",
+            "text-light": "#1f2937",
+            "text-dark": "#ffffff"
+          },
+          fontFamily: {
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "8px",
+          },
+        },
+      },
+    };
+  </script>
+<style>
+    .hero-gradient {
+        background-image: radial-gradient(circle at 50% 50%, rgba(199, 183, 255, 0.1), rgba(13, 15, 20, 0) 50%);
+    }
+  </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark antialiased">
+<div class="flex flex-col min-h-screen">
+<header class="w-full px-4 sm:px-6 lg:px-8 py-6">
+  <nav class="flex items-center justify-between">
+    <a class="flex items-center space-x-2" href="{% url 'saathi:home' %}">
+      <img src="{% static 'flower.png' %}" class="h-10 w-10" />
+      <span class="font-bold text-xl text-text-light dark:text-text-dark">Saathi</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+    <a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:chat' %}">Chat</a>
+    <a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:quiz_gen' %}">Make a Quiz</a>
+    <a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:progress' %}">Progress</a>
+    <a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:take_quiz' %}">Take a Quiz</a>
+    </div>
+        
+    <div class="hidden md:flex items-center gap-3">
+      {% if not username %}
+        <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'saathi:login' %}">Log In</a>
+        <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'saathi:signup' %}">Sign Up</a>
+      {% else %}
+        <span class="text-sm text-white/80">Logged in as <strong>{{ username }}</strong></span>
+        <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'saathi:logout' %}">Log Out</a>
+      {% endif %}
+    </div>
+    
+    <button class="md:hidden">
+      <span class="material-icons-outlined text-text-light dark:text-text-dark">menu</span>
+    </button>
+  </nav>
+</header>
+<main class="flex-grow">
+<section class="relative text-center py-20 md:py-32 lg:py-40 px-4 sm:px-6 lg:px-8 hero-gradient">
+<div class="max-w-3xl mx-auto">
+<h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter text-text-light dark:text-text-main mb-6">
+            Entrenched in AI slop?
+          </h1>
+<p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
+            Let Saathi pull you out. Saathi doesn't solve your problems, <strong> it builds a brain that can. </strong>
+          </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<a class="w-full sm:w-auto px-8 py-3 bg-accent-1 text-background-dark font-bold rounded-DEFAULT shadow-lg hover:opacity-90 transition-opacity" href="{% url 'saathi:chat' %}">
+              Meet Saathi
+            </a>
+<a class="w-full sm:w-auto px-8 py-3 bg-gray-200 dark:bg-gray-800/50 text-text-light dark:text-text-dark font-bold rounded-DEFAULT ring-1 ring-gray-300 dark:ring-gray-700 hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors" href="{% url 'saathi:contact' %}">
+              Contact Us
+            </a>
+</div>
+</div>
+</section>
+<section class="py-20 md:py-28 px-4 sm:px-6 lg:px-8">
+<div class="max-w-5xl mx-auto text-center">
+<h2 class="text-3xl md:text-4xl font-bold tracking-tight text-text-light dark:text-text-main mb-4">
+            The Saathi Method.
+          </h2>
+<p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-12 md:mb-16">
+            As your Saathi on the STEM journey, it <strong>ensures growth without AI dependency.</strong> Here's how.
+          </p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+<div class="bg-gray-100/50 dark:bg-gray-900/40 p-8 rounded-lg border border-gray-200 dark:border-gray-800">
+<div class="inline-block p-3 mb-4 rounded-lg bg-secondary/10">
+<svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#ffa8a8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M12 16V12" stroke="#ffa8a8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M12 8H12.01" stroke="#ffa8a8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h3 class="text-xl font-bold text-text-light dark:text-text-main mb-2">Explain Problems</h3>
+<p class="text-gray-600 dark:text-gray-400">
+                <strong> Breaks down complex STEM challenges. </strong> It throws the problem back at you, but in a simplified, no nonsense language.
+              </p>
+</div>
+<div class="bg-gray-100/50 dark:bg-gray-900/40 p-8 rounded-lg border border-gray-200 dark:border-gray-800">
+<div class="inline-block p-3 mb-4 rounded-lg bg-accent-1/10">
+<svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.31 11.23L11.23 2.31C11.4287 2.11128 11.7051 2.00001 12 2.00001C12.2949 2.00001 12.5713 2.11128 12.77 2.31L21.69 11.23C21.8887 11.4287 22 11.7051 22 12C22 12.2949 21.8887 12.5713 21.69 12.77L12.77 21.69C12.5713 21.8887 12.2949 22 12 22C11.7051 22 11.4287 21.8887 11.23 21.69L2.31 12.77C2.11128 12.5713 2.00001 12.2949 2.00001 12C2.00001 11.7051 2.11128 11.4287 2.31 11.23V11.23Z" stroke="#c7b7ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M12 16L7 12L12 8" stroke="#c7b7ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M17 12H7" stroke="#c7b7ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h3 class="text-xl font-bold text-text-light dark:text-text-main mb-2">Teach Theory</h3>
+<p class="text-gray-600 dark:text-gray-400">
+                It will teach you the why, what, where, when behind the problem, but the how? <span class="font-bold">Figure it out.</span>
+</p>
+</div>
+<div class="bg-gray-100/50 dark:bg-gray-900/40 p-8 rounded-lg border border-gray-200 dark:border-gray-800">
+<div class="inline-block p-3 mb-4 rounded-lg bg-blue-500/10">
+<svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M2 17L12 22L22 17" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M2 12L12 17L22 12" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<h3 class="text-xl font-bold text-text-light dark:text-text-main mb-2">Guide, Don't Solve</h3>
+<p class="text-gray-600 dark:text-gray-400">
+                Provides hints and Socratic questions to lead you to the solution, <strong> forcing you to develop that problem-solving muscle. </strong>
+              </p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200 dark:border-gray-800">
+<div class="flex flex-col sm:flex-row items-center justify-between">
+<div class="flex items-center space-x-2">
+<img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="font-bold text-xl text-text-light dark:text-text-dark">Saathi</span>
+</div>
+    <p class="text-sm text-gray-400 mb-6">Part of <a class="font-semibold text-accent-1 hover:underline" href="{% url 'portal:home' %}">MetaCog</a></p>
+<p class="text-gray-500 dark:text-gray-400 text-sm mt-4 sm:mt-0">
+          © 2025 Saathi. All rights reserved.
+        </p>
+</div>
+</footer>
+</div>
+
+</body></html>

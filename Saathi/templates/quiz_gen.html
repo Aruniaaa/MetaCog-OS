@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Saathi - Quiz Generator</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#fe7474",
+            "background-light": "#ffffff",
+            "background-dark": "#0D0F14",
+            "accent-1": "#c7b7ff",
+            secondary: "#ffa8a8",
+            "text-main": "#ffffff",
+            "text-light": "#1f2937",
+            "text-dark": "#ffffff"
+          },
+          fontFamily: {
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "8px",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark antialiased">
+<div class="flex flex-col min-h-screen">
+<header class="w-full px-4 sm:px-6 lg:px-8 py-6">
+<nav class="flex items-center justify-between">
+<a class="flex items-center space-x-2" href="{% url 'saathi:home' %}">
+<img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="font-bold text-xl text-text-light dark:text-text-dark">Saathi</span>
+</a>
+<div class="hidden md:flex items-center justify-center flex-1 space-x-6">
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:chat' %}">Chat</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:progress' %}">Progress</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:take_quiz' %}">Take a Quiz</a>
+</div>
+<div class="hidden md:flex items-center space-x-6">
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:home' %}">Home</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:contact' %}">Contact Us</a>
+</div>
+<button class="md:hidden">
+<span class="material-icons-outlined text-text-light dark:text-text-dark">menu</span>
+</button>
+</nav>
+</header>
+<main class="flex-grow">
+<section class="text-center py-16 md:py-20 px-4 sm:px-6 lg:px-8">
+<div class="max-w-4xl mx-auto">
+<h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-text-main mb-4">
+            Generate Your Quiz
+          </h1>
+<p class="text-lg text-gray-400 mb-12">
+            Upload a document or paste your content to create a quiz.
+          </p>
+
+<form method="POST" action="{% url 'saathi:quiz_gen' %}" enctype="multipart/form-data" id="quizForm">
+    {% csrf_token %}
+    <div class="w-full max-w-2xl mx-auto mb-6">
+    <textarea name="content" class="w-full h-48 bg-gray-900/40 border border-gray-800 rounded-lg p-4 text-text-dark placeholder-gray-500 focus:ring-accent-1 focus:border-accent-1" placeholder="Paste your content here or upload a file..."></textarea>
+
+    <input 
+        type="file" 
+        name="uploaded_file" 
+        class="hidden" 
+        id="fileInput"
+        accept=".pdf,.docx,.txt"
+    />
+
+    <label for="fileInput" 
+        class="flex items-center justify-center mt-4 cursor-pointer">
+        <span class="flex items-center space-x-2 px-6 py-2 border border-gray-600 rounded-full text-gray-300 hover:bg-gray-800 transition-colors">
+            <span class="material-icons-outlined text-base">upload_file</span>
+            <span id="fileName">Upload File</span>
+        </span>
+    </label>
+    </div>
+    {% if message %}
+        <div class="w-full max-w-2xl mx-auto mb-4 px-4 py-3 rounded-DEFAULT 
+                    bg-red-500/10 text-red-400 border border-red-500/40">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <div class="flex justify-center mb-16">
+    <button type="submit" id="submitBtn" class="px-8 py-3 bg-primary text-background-dark font-bold rounded-DEFAULT shadow-lg hover:opacity-90 transition-opacity">
+                Generate Quiz
+            </button>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="hidden w-full max-w-2xl mx-auto mb-16">
+        <div class="flex flex-col items-center justify-center space-y-4">
+            <div class="relative w-16 h-16">
+                <div class="absolute top-0 left-0 w-full h-full border-4 border-accent-1/20 rounded-full"></div>
+                <div class="absolute top-0 left-0 w-full h-full border-4 border-accent-1 rounded-full border-t-transparent animate-spin"></div>
+            </div>
+            <p class="text-gray-400 text-lg">Generating your quiz...</p>
+            <p class="text-gray-500 text-sm">This may take a moment</p>
+        </div>
+    </div>
+</form>
+{% if generated %}
+    <div class="w-full max-w-2xl mx-auto text-center border-t border-gray-800 pt-8 mt-12">
+    <p class="text-gray-400 mb-4">Your quiz has been generated!</p>
+    <a class="inline-block px-8 py-3 bg-accent-1 text-background-dark font-bold rounded-DEFAULT shadow-lg hover:opacity-90 transition-opacity" href="{% url 'saathi:take_quiz' %}">
+                Go to Quiz
+                </a>
+{% endif %}
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-800">
+<div class="flex flex-col sm:flex-row items-center justify-between">
+<div class="flex items-center space-x-2">
+<img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="font-bold text-xl text-text-dark">Saathi</span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mt-4 sm:mt-0">
+          © 2025 Saathi. All rights reserved.
+        </p>
+</div>
+</footer>
+</div>
+<script>
+
+    document.getElementById('fileInput').addEventListener('change', function () 
+    {
+        const file = this.files[0];
+        if (!file) return;
+
+        const maxSizeMB = 5;
+        const bytes = maxSizeMB * 1024 * 1024;
+
+        if (file.size > bytes) 
+        {
+            alert(`File too large! Max allowed size is ${maxSizeMB} MB.`);
+            this.value = "";  
+        }
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name || 'Upload File';
+    document.getElementById('fileName').textContent = fileName;
+    });
+
+
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        
+        submitBtn.classList.add('hidden');
+        loader.classList.remove('hidden');
+    });
+
+</script>
+</body></html>

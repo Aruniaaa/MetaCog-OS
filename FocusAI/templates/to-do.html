@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>FocusAI To-Do List</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#fe7474",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#0D0F14",
+                        "accent-violet": "#c7b7ff"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        };
+    </script>
+    <style>
+        .glow-effect {
+            box-shadow: 0 0 10px #c7b7ff, 0 0 20px #c7b7ff, 0 0 30px #c7b7ff;
+        }
+        .editing {
+            background: rgba(254, 116, 116, 0.1) !important;
+            border: 1px solid #fe7474 !important;
+        }
+        .task-fade-out {
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: all 0.3s ease-in-out;
+        }
+        .task-fade-in {
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30">
+    <div class="relative min-h-screen w-full overflow-x-hidden">
+
+        <div class="relative z-10 flex h-full grow flex-col">
+            <header class="flex items-center justify-between whitespace-nowrap border-b border-white/10 px-10 py-5">
+                <div class="flex items-center gap-4">
+                    <img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
+                    <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">FocusAI</h2>
+                </div>
+                <nav class="hidden md:flex flex-1 items-center justify-center gap-6">
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:timer' %}">Timer</a>
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:stats' %}">Stats</a>
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:summarization' %}">Summarization</a>
+                </nav>
+                <div class="hidden md:flex items-center gap-6">
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:home' %}">Home</a>
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:contact' %}">Contact Us</a>
+                </div>
+                <div class="flex items-center gap-6 md:hidden">
+                    <button class="text-white/70 hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-3xl">menu</span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="flex flex-1 flex-col items-center gap-12 px-4 py-16 sm:px-6 lg:px-8">
+                <div class="w-full max-w-2xl space-y-8">
+                    <h1 class="text-4xl font-bold text-center tracking-[-0.02em]">My To-Do List</h1>
+
+                    <!-- Add Task Form -->
+                    <div class="w-full space-y-4">
+                        <div class="flex items-center gap-4">
+                            <input class="w-full rounded-lg border border-white/20 bg-white/5 p-4 text-white/90 placeholder-white/40 focus:border-primary focus:ring-primary focus:ring-opacity-50 transition-all"
+                                   id="new-task" placeholder="Add a new task..." type="text" maxlength="50"/>
+                            <button id="add-task-btn" class="flex items-center justify-center rounded-md bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:scale-105 hover:glow-effect">
+                                <span class="add-btn-text">Add Task</span>
+                                <span class="add-btn-loading hidden">Adding...</span>
+                            </button>
+                        </div>
+
+                        <!-- Delete Completed Tasks Button -->
+                        <div class="flex justify-end">
+                            <button id="delete-completed-btn" class="flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" style="display: none;">
+                                <span class="material-symbols-outlined text-lg">delete_sweep</span>
+                                <span class="delete-completed-text">Clear Completed</span>
+                                <span class="delete-completed-loading hidden">Clearing...</span>
+                            </button>
+                        </div>
+
+                        <!-- Tasks Container -->
+                        <div id="tasks-container" class="space-y-3">
+                            {% for task in tasks %}
+                            <div class="task-item flex items-center justify-between rounded-lg bg-white/5 p-4 transition-all hover:bg-white/10 task-fade-in" data-task-id="{{ task.id }}">
+                                <div class="flex items-center gap-4">
+                                    <input class="task-checkbox h-5 w-5 rounded border-primary bg-transparent text-primary focus:ring-primary focus:ring-offset-background-dark"
+                                           type="checkbox" {% if task.completed %}checked{% endif %}/>
+                                    <label class="task-text {% if task.completed %}text-white/50 line-through{% else %}text-white/90{% endif %}">{{ task.task }}</label>
+                                    <input class="task-edit-input hidden w-full rounded border border-primary bg-transparent px-2 py-1 text-white" type="text" maxlength="50"/>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button class="edit-btn text-white/50 hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined">edit</span>
+                                    </button>
+                                    <button class="delete-btn text-white/50 hover:text-red-400 transition-colors">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div id="no-tasks" class="text-center text-white/50 py-8">
+                                <span class="material-symbols-outlined text-6xl mb-4 block">task_alt</span>
+                                <p>No tasks yet. Add one above!</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        class TodoManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+            }
+
+            bindEvents() {
+
+                document.getElementById('add-task-btn').addEventListener('click', () => this.addTask());
+                document.getElementById('new-task').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.addTask();
+                });
+
+
+                document.getElementById('delete-completed-btn').addEventListener('click', () => this.deleteCompletedTasks());
+
+
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('task-checkbox') || e.target.closest('.task-checkbox')) {
+                        this.toggleTask(e.target);
+                    } else if (e.target.closest('.edit-btn')) {
+                        this.editTask(e.target.closest('.task-item'));
+                    } else if (e.target.closest('.delete-btn')) {
+                        this.deleteTask(e.target.closest('.task-item'));
+                    }
+                });
+
+
+                document.addEventListener('keypress', (e) => {
+                    if (e.target.classList.contains('task-edit-input') && e.key === 'Enter') {
+                        this.saveEdit(e.target.closest('.task-item'));
+                    }
+                });
+
+
+                document.addEventListener('blur', (e) => {
+                    if (e.target.classList.contains('task-edit-input')) {
+                        this.saveEdit(e.target.closest('.task-item'));
+                    }
+                }, true);
+
+
+                this.updateDeleteCompletedButton();
+            }
+
+            async addTask() {
+                const input = document.getElementById('new-task');
+                const taskText = input.value.trim();
+                const button = document.getElementById('add-task-btn');
+
+                if (!taskText) return;
+
+
+                button.querySelector('.add-btn-text').classList.add('hidden');
+                button.querySelector('.add-btn-loading').classList.remove('hidden');
+                button.disabled = true;
+
+                try {
+                    const response = await fetch('/focusai/api/tasks/add/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ task: taskText })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.addTaskToDOM(data.task);
+                        input.value = '';
+                        this.hideNoTasksMessage();
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Failed to add task');
+                    }
+                } catch (error) {
+                    console.error('Error adding task:', error);
+                    alert('Failed to add task');
+                } finally {
+
+                    button.querySelector('.add-btn-text').classList.remove('hidden');
+                    button.querySelector('.add-btn-loading').classList.add('hidden');
+                    button.disabled = false;
+                }
+            }
+
+            async toggleTask(checkbox) {
+                const taskItem = checkbox.closest('.task-item');
+                const taskId = taskItem.dataset.taskId;
+                const label = taskItem.querySelector('.task-text');
+
+                try {
+                    const response = await fetch(`/focusai/api/tasks/${taskId}/toggle/`, {
+                        method: 'POST',
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        if (data.completed) {
+                            label.classList.add('text-white/50', 'line-through');
+                            label.classList.remove('text-white/90');
+                        } else {
+                            label.classList.remove('text-white/50', 'line-through');
+                            label.classList.add('text-white/90');
+                        }
+
+
+                        this.updateDeleteCompletedButton();
+                    } else {
+                        checkbox.checked = !checkbox.checked;
+                        alert('Failed to update task');
+                    }
+                } catch (error) {
+                    console.error('Error toggling task:', error);
+                    checkbox.checked = !checkbox.checked;
+                    alert('Failed to update task');
+                }
+            }
+
+            editTask(taskItem) {
+                const label = taskItem.querySelector('.task-text');
+                const input = taskItem.querySelector('.task-edit-input');
+
+                if (taskItem.classList.contains('editing')) {
+                    this.saveEdit(taskItem);
+                    return;
+                }
+
+                taskItem.classList.add('editing');
+                input.value = label.textContent;
+                label.classList.add('hidden');
+                input.classList.remove('hidden');
+                input.focus();
+            }
+
+            async saveEdit(taskItem) {
+                const taskId = taskItem.dataset.taskId;
+                const label = taskItem.querySelector('.task-text');
+                const input = taskItem.querySelector('.task-edit-input');
+                const newText = input.value.trim();
+
+                if (!newText) {
+                    this.cancelEdit(taskItem);
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/focusai/api/tasks/${taskId}/edit/`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ task: newText })
+                    });
+
+                    if (response.ok) {
+                        label.textContent = newText;
+                        this.exitEditMode(taskItem);
+                    } else {
+                        alert('Failed to update task');
+                        this.cancelEdit(taskItem);
+                    }
+                } catch (error) {
+                    console.error('Error editing task:', error);
+                    alert('Failed to update task');
+                    this.cancelEdit(taskItem);
+                }
+            }
+
+            cancelEdit(taskItem) {
+                this.exitEditMode(taskItem);
+            }
+
+            exitEditMode(taskItem) {
+                const label = taskItem.querySelector('.task-text');
+                const input = taskItem.querySelector('.task-edit-input');
+
+                taskItem.classList.remove('editing');
+                label.classList.remove('hidden');
+                input.classList.add('hidden');
+            }
+
+            async deleteTask(taskItem) {
+                const taskId = taskItem.dataset.taskId;
+
+                if (!confirm('Are you sure you want to delete this task?')) {
+                    return;
+                }
+
+                taskItem.classList.add('task-fade-out');
+
+                try {
+                    const response = await fetch(`/focusai/api/tasks/${taskId}/delete/`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        setTimeout(() => {
+                            taskItem.remove();
+                            this.checkIfEmpty();
+                            this.updateDeleteCompletedButton();
+                        }, 300);
+                    } else {
+                        taskItem.classList.remove('task-fade-out');
+                        alert('Failed to delete task');
+                    }
+                } catch (error) {
+                    console.error('Error deleting task:', error);
+                    taskItem.classList.remove('task-fade-out');
+                    alert('Failed to delete task');
+                }
+            }
+
+            async deleteCompletedTasks() {
+                const button = document.getElementById('delete-completed-btn');
+                const completedTasks = document.querySelectorAll('.task-item .task-checkbox:checked');
+
+                if (completedTasks.length === 0) {
+                    alert('No completed tasks to delete');
+                    return;
+                }
+
+                const confirmMessage = `Are you sure you want to delete all ${completedTasks.length} completed task${completedTasks.length === 1 ? '' : 's'}?`;
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+
+                button.querySelector('.delete-completed-text').classList.add('hidden');
+                button.querySelector('.delete-completed-loading').classList.remove('hidden');
+                button.disabled = true;
+
+                try {
+                    const response = await fetch('/focusai/api/tasks/delete-completed/', {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+
+                        const completedTaskItems = Array.from(document.querySelectorAll('.task-item')).filter(item => {
+                            return item.querySelector('.task-checkbox').checked;
+                        });
+
+                        completedTaskItems.forEach((taskItem, index) => {
+                            setTimeout(() => {
+                                taskItem.classList.add('task-fade-out');
+                                setTimeout(() => {
+                                    taskItem.remove();
+
+                                    if (index === completedTaskItems.length - 1) {
+                                        this.checkIfEmpty();
+                                        this.updateDeleteCompletedButton();
+                                    }
+                                }, 300);
+                            }, index * 100);
+                        });
+
+
+                        if (data.message) {
+                            setTimeout(() => {
+                                alert(data.message);
+                            }, completedTaskItems.length * 100 + 300);
+                        }
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Failed to delete completed tasks');
+                    }
+                } catch (error) {
+                    console.error('Error deleting completed tasks:', error);
+                    alert('Failed to delete completed tasks');
+                } finally {
+
+                    button.querySelector('.delete-completed-text').classList.remove('hidden');
+                    button.querySelector('.delete-completed-loading').classList.add('hidden');
+                    button.disabled = false;
+                }
+            }
+
+            addTaskToDOM(task) {
+                const container = document.getElementById('tasks-container');
+                const taskElement = this.createTaskElement(task);
+                container.insertBefore(taskElement, container.firstChild);
+
+                setTimeout(() => {
+                    taskElement.classList.add('task-fade-in');
+                    this.updateDeleteCompletedButton();
+                }, 10);
+            }
+
+            createTaskElement(task) {
+                const div = document.createElement('div');
+                div.className = 'task-item flex items-center justify-between rounded-lg bg-white/5 p-4 transition-all hover:bg-white/10';
+                div.dataset.taskId = task.id;
+
+                const completedClass = task.completed ? 'text-white/50 line-through' : 'text-white/90';
+                const checkedAttr = task.completed ? 'checked' : '';
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <input class="task-checkbox h-5 w-5 rounded border-primary bg-transparent text-primary focus:ring-primary focus:ring-offset-background-dark"
+                               type="checkbox" ${checkedAttr}/>
+                        <label class="task-text ${completedClass}">${task.task}</label>
+                        <input class="task-edit-input hidden w-full rounded border border-primary bg-transparent px-2 py-1 text-white" type="text" maxlength="50"/>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="edit-btn text-white/50 hover:text-white transition-colors">
+                            <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button class="delete-btn text-white/50 hover:text-red-400 transition-colors">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    </div>
+                `;
+
+                return div;
+            }
+
+            hideNoTasksMessage() {
+                const noTasks = document.getElementById('no-tasks');
+                if (noTasks) {
+                    noTasks.remove();
+                }
+            }
+
+            checkIfEmpty() {
+                const container = document.getElementById('tasks-container');
+                const tasks = container.querySelectorAll('.task-item');
+
+                if (tasks.length === 0) {
+                    const noTasksDiv = document.createElement('div');
+                    noTasksDiv.id = 'no-tasks';
+                    noTasksDiv.className = 'text-center text-white/50 py-8';
+                    noTasksDiv.innerHTML = `
+                        <span class="material-symbols-outlined text-6xl mb-4 block">task_alt</span>
+                        <p>No tasks yet. Add one above!</p>
+                    `;
+                    container.appendChild(noTasksDiv);
+                }
+            }
+
+            updateDeleteCompletedButton() {
+                const button = document.getElementById('delete-completed-btn');
+                const completedTasks = document.querySelectorAll('.task-item .task-checkbox:checked');
+                const hasCompleted = completedTasks.length > 0;
+
+                if (hasCompleted) {
+                    button.style.display = 'flex';
+                    button.querySelector('.delete-completed-text').textContent = `Clear Completed (${completedTasks.length})`;
+                } else {
+                    button.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new TodoManager();
+        });
+    </script>
+</body>
+</html>

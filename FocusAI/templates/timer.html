@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FocusAI Timer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#fe7474",           // Deep Neural Blue
+          "background-light": "#f7f6f8",
+          "background-dark": "#0D0F14",   // Cognitive Void
+          "accent-violet": "#c7b7ff",     // Midnight Indigo
+          "secondary": "#ffa8a8"          // Synapse Pink
+        },
+        fontFamily: {
+          "display": ["Space Grotesk"]
+        },
+        borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+      },
+    },
+  };
+</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+    .material-symbols-filled {
+        font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+
+
+  .glow-effect {
+    box-shadow: 0 0 10px #c7b7ff, 0 0 20px #c7b7ff, 0 0 30px #c7b7ff;
+  }
+  .timer-glow {
+    box-shadow: 0 0 40px #fe7474, 0 0 80px #fe7474, 0 0 120px #fe7474;
+  }
+  .debug-panel {
+    background: rgba(13, 15, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(199, 183, 255, 0.1);
+  }
+  .confidence-bar {
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+  .detection-pulse {
+    animation: pulse-pink 1s infinite;
+  }
+  @keyframes pulse-pink {
+    0%, 100% { background-color: rgba(255, 168, 168, 0.2); }
+    50% { background-color: rgba(255, 168, 168, 0.4); }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+
+  #debug-panel {
+    transform: translateX(calc(100% + 24px));
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #debug-panel.open {
+    transform: translateX(0);
+  }
+
+  .confidence-bar {
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+
+
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white">
+<div class="relative flex min-h-screen w-full flex-col">
+
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-white/10 px-10 py-5">
+  <div class="flex items-center gap-4">
+    <img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
+    <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">FocusAI</h2>
+  </div>
+  <nav class="hidden md:flex flex-1 items-center justify-center gap-6">
+    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:summarization'%}">Summarization</a>
+    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:stats'%}">Stats</a>
+    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:to-do'%}">To Do List</a>
+  </nav>
+  <div class="hidden md:flex items-center gap-6">
+    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:home'%}">Home</a>
+    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:contact'%}">Contact Us</a>
+  </div>
+  <div class="flex items-center gap-6 md:hidden">
+    <button class="text-white/70 hover:text-white transition-colors">
+      <span class="material-symbols-outlined text-3xl">menu</span>
+    </button>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="flex flex-1 flex-col items-center justify-center p-4 pt-8 sm:pt-10 md:pt-12">
+  <div class="flex flex-col items-center gap-8">
+
+    <!-- Phone Warning - Now INSIDE the flex container -->
+    <div id="phone-warning" class="hidden animate-fade-in">
+      <div class="bg-gradient-to-r from-[#fe7474]/20 to-[#ff6b6b]/20 border border-[#fe7474]/50 backdrop-blur-sm rounded-xl px-6 py-4 shadow-lg">
+        <div class="flex items-center justify-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#fe7474]/30">
+            <span class="material-symbols-outlined text-[#fe7474] text-xl">phone_android</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-white font-semibold text-base">Focus Alert!</span>
+            <span id="phone-warning-text" class="text-white/80 text-sm">Caught you. Get back to work.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Circular Timer -->
+    <div class="relative flex h-80 w-80 items-center justify-center sm:h-96 sm:w-96">
+      <svg class="absolute inset-0" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" fill="none" r="54" stroke="#ffffff" stroke-opacity="0.1" stroke-width="12"></circle>
+        <circle cx="60" cy="60" fill="none" r="54" stroke="url(#timerGradient)" stroke-dasharray="339.292" stroke-dashoffset="0" stroke-linecap="round" stroke-width="12" transform="rotate(-90 60 60)"></circle>
+        <defs>
+          <linearGradient id="timerGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#c7b7ff"></stop>
+            <stop offset="100%" stop-color="#fe7474"></stop>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="z-10 text-center">
+        <h2 id="timer-display" class="text-6xl font-bold tracking-tighter text-white sm:text-7xl md:text-8xl">00:00</h2>
+      </div>
+    </div>
+
+    <!-- Timer Controls -->
+    <div class="flex w-full max-w-md items-center justify-center gap-4">
+      <button id="start" class="group flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary py-4 px-6 text-base font-bold text-[#0D0F14] transition-all hover:bg-secondary">
+        <span class="material-symbols-outlined mr-2">play_arrow</span>
+        <span class="truncate">Start</span>
+      </button>
+      <button id="pause" class="group flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-white/10 py-4 px-6 text-base font-bold text-white transition-all hover:bg-white/20">
+        <span class="material-symbols-outlined">pause</span>
+        <span class="truncate">Pause</span>
+      </button>
+      <button id="stop" class="group flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-transparent py-4 px-6 text-base font-bold text-white/70 transition-all hover:bg-white/10 hover:text-white">
+        <span class="material-symbols-outlined">stop</span>
+        <span class="truncate">Stop</span>
+      </button>
+    </div>
+
+  </div>
+</main>
+
+</div>
+
+
+
+<!-- AI Debug Panel Toggle Button -->
+<button id="debug-toggle" class="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-background-dark shadow-lg transition-all hover:bg-secondary">
+  <span class="material-symbols-outlined">monitor_heart</span>
+</button>
+
+<div id="debug-panel" class="fixed bottom-24 right-6 z-40 hidden w-80 rounded-xl bg-[#1a1c24] border border-white/10 p-6 shadow-2xl">
+  <div class="mb-4 flex items-center justify-between">
+    <h3 class="text-lg font-bold text-white">AI Detection</h3>
+    <div class="flex items-center gap-2">
+      <div id="status-indicator" class="h-3 w-3 rounded-full bg-green-500"></div>
+      <span id="status-text" class="text-xs text-white/60">Active</span>
+    </div>
+  </div>
+
+   <div class="mb-4 space-y-3">
+    <div class="flex items-center justify-between rounded-lg bg-white/5 p-3 border border-white/10">
+      <span class="text-sm text-white/80">Detect Phones</span>
+      <label class="relative inline-block w-11 h-6 cursor-pointer">
+        <input type="checkbox" id="toggle-phones" class="peer sr-only" checked>
+        <div class="absolute inset-0 rounded-full bg-white/20 transition peer-checked:bg-[#c7b7ff]"></div>
+        <div class="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-5"></div>
+      </label>
+    </div>
+
+    <div class="flex items-center justify-between rounded-lg bg-white/5 p-3 border border-white/10">
+      <span class="text-sm text-white/80">Detect Tab Switches</span>
+      <label class="relative inline-block w-11 h-6 cursor-pointer">
+        <input type="checkbox" id="toggle-tabs" class="peer sr-only" checked>
+        <div class="absolute inset-0 rounded-full bg-white/20 transition peer-checked:bg-[#c7b7ff]"></div>
+        <div class="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-5"></div>
+      </label>
+    </div>
+  </div>
+
+
+  <!-- Live Confidence Score -->
+  <div class="mb-4">
+    <div class="text-sm mb-2 text-white/80">Phone Detection Confidence</div>
+
+    <div class="mb-3">
+      <div class="flex justify-between text-xs mb-1">
+        <span class="text-white/60">Average Confidence</span>
+        <span id="phone-confidence-text" class="text-white font-semibold">0%</span>
+      </div>
+      <div class="w-full rounded-full h-3 bg-white/10 overflow-hidden">
+        <div id="phone-confidence-bar" class="confidence-bar h-3 rounded-full" style="width: 0%; background-color: #66bb6a;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 gap-3 text-center">
+    <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+      <div class="text-2xl font-bold text-[#ffa726]" id="total-detections">0</div>
+      <div class="text-xs text-white/60">Detections Today</div>
+    </div>
+    <div class="rounded-lg bg-white/5 p-3 border border-white/10">
+      <div class="text-2xl font-bold text-[#ff6b6b]" id="high-conf-count">0</div>
+      <div class="text-xs text-white/60">High Confidence</div>
+    </div>
+  </div>
+</div>
+<script>
+
+const censorSound = "{% static 'assets/censor.mp3' %}";
+
+const audio = new Audio(censorSound);
+
+
+let start = document.getElementById("start");
+let pause = document.getElementById("pause");
+let stop = document.getElementById("stop");
+let display = document.getElementById("timer-display");
+
+let debugPanel = document.getElementById("debug-panel");
+let debugToggle = document.getElementById("debug-toggle");
+let phoneWarning = document.getElementById("phone-warning");
+
+let timerInterval = null;
+let elapsedSeconds = 0;
+let isPhoneDetectionActive = false;
+let phoneInterruptionCount = 0;
+let phoneDetectionInterval = null;
+let debugPanelOpen = false;
+
+const phonesToggle = document.getElementById('toggle-phones');
+const tabsToggle = document.getElementById('toggle-tabs');
+
+
+debugToggle.addEventListener('click', () => {
+    debugPanelOpen = !debugPanelOpen;
+
+    if (debugPanelOpen) {
+        debugPanel.classList.remove('hidden');
+        debugPanel.classList.add('open');
+        debugToggle.innerHTML = '<span class="material-symbols-outlined">close</span>';
+    } else {
+        debugPanel.classList.remove('open');
+        setTimeout(() => {
+            if (!debugPanelOpen) {
+                debugPanel.classList.add('hidden');
+            }
+        }, 300);
+        debugToggle.innerHTML = '<span class="material-symbols-outlined">monitor_heart</span>';
+    }
+});
+
+
+function updateDebugPanel(data) {
+    if (!data) return;
+
+
+    const statusIndicator = document.getElementById('status-indicator');
+    const statusText = document.getElementById('status-text');
+
+
+    if (data.detection_running && data.model_loaded) {
+        statusIndicator.className = 'h-3 w-3 rounded-full bg-green-500 shadow-lg shadow-green-500/50';
+        statusText.textContent = 'Active';
+    } else if (data.model_loaded) {
+        statusIndicator.className = 'h-3 w-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50';
+        statusText.textContent = 'Ready';
+    } else {
+        statusIndicator.className = 'h-3 w-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50';
+        statusText.textContent = 'Offline';
+    }
+
+
+    if (data.confidence && data.confidence.avg_conf !== undefined) {
+        updateConfidenceBar(data.confidence.avg_conf);
+    }
+
+
+    if (data) {
+        updateStats(data);
+    }
+}
+
+
+function updateConfidenceBar(phoneConfidence) {
+    const phoneConfBar = document.getElementById('phone-confidence-bar');
+    const phoneConfText = document.getElementById('phone-confidence-text');
+
+    const percentage = Math.round(phoneConfidence * 100);
+
+
+    phoneConfBar.style.width = `${percentage}%`;
+    phoneConfText.textContent = `${percentage}%`;
+
+
+    if (percentage >= 90) {
+        phoneConfBar.style.backgroundColor = '#ff6b6b'; // Red for high confidence
+    } else if (percentage >= 40) {
+        phoneConfBar.style.backgroundColor = '#ffa726'; // Orange for medium
+    } else {
+        phoneConfBar.style.backgroundColor = '#66bb6a'; // Green for low
+    }
+}
+
+
+function updateStats(data) {
+    const totalDetections = document.getElementById('total-detections');
+    const highConfCount = document.getElementById('high-conf-count');
+
+
+    if (data.stats.interruptions_today !== undefined) {
+        totalDetections.textContent = data.stats.interruptions_today;
+    }
+
+    if (data.confidence.high_conf_count !== undefined) {
+        highConfCount.textContent = data.confidence.high_conf_count;
+    }
+}
+
+function updateDisplay() {
+    let minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
+    let seconds = String(elapsedSeconds % 60).padStart(2, "0");
+    display.textContent = `${minutes}:${seconds}`;
+}
+
+
+function showPhoneWarning(count) {
+    const warningText = document.getElementById('phone-warning-text');
+    const phoneWarning = document.getElementById('phone-warning');
+
+
+    let message;
+    if (count === 1) {
+        message = 'Caught you. Get back to work. • First distraction';
+    } else if (count === 2) {
+        message = 'Again? Stay focused! • 2nd time today';
+    } else if (count === 3) {
+        message = 'Third strike! Focus up. • 3 distractions today';
+    } else if (count <= 5) {
+        message = `Really? Focus time! • ${count} times today`;
+    } else if (count <= 10) {
+        message = `This is getting serious... • ${count} times today`;
+    } else {
+        message = `${count} distractions today. You can do better!`;
+    }
+
+    warningText.textContent = message;
+    phoneWarning.classList.remove('hidden');
+
+    setTimeout(() => {
+        phoneWarning.classList.add('hidden');
+    }, 5000);
+}
+
+function startPhoneDetectionPolling() {
+
+    console.log("Polling started…");
+    phoneDetectionInterval = setInterval(() => {
+        console.log("Tick… trying fetch");
+        fetch("/focusai/api/detection-status/")
+            .then(res => res.json())
+            .then(data => {
+
+             console.log("DATA RECEIVED:", data);
+             console.log("stats:", data.stats);
+
+                updateDebugPanel(data);
+                console.log("STARTED");
+
+                if (data.should_pause && phonesToggle.checked) {
+                    console.log("PAUSING THE TIMERRRRRRR 🫦🫦");
+                    audio.play();
+                    phoneInterruptionCount = data.stats.interruptions_today;
+                    showPhoneWarning(phoneInterruptionCount);
+                    pauseTimer();
+                    updatePhoneInterruptions();
+                }
+            })
+            .catch(err => {
+                console.error("Failed to get detection status:", err);
+            });
+    }, 1000);
+}
+
+function stopPhoneDetectionPolling() {
+    if (phoneDetectionInterval) {
+        clearInterval(phoneDetectionInterval);
+        phoneDetectionInterval = null;
+    }
+}
+
+
+async function updatePhoneInterruptions()
+{
+
+    try
+    {
+        const response = await fetch("/focusai/api/phone_detected/",
+        {
+            method : "POST",
+            headers :
+            {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok)
+        {
+            console.log(`Failed to update phone interruption count: ${response.status}$`);
+
+        }
+
+    }
+    catch(error)
+    {
+        console.log("AN ERROR OCCURED", error);
+    }
+
+}
+
+
+start.addEventListener('click', () => {
+    fetch("/focusai/api/start/")
+        .then(res => res.json())
+        .then(data => {
+            console.log("Start response:", data);
+            console.log("STARTED THE TIMER SUCCESSFULLY");
+
+            isPhoneDetectionActive = data.phone_detection;
+            console.log(`checked if phone detection is active: ${isPhoneDetectionActive}`);
+            if (isPhoneDetectionActive)
+            {
+                startPhoneDetectionPolling();
+            }
+
+
+            if (!data.phone_detection) {
+                alert("Timer started, but phone detection is not available. Check the debug panel for details.");
+            }
+        })
+        .catch(err => {
+            console.error("Failed to start timer:", err);
+            alert("Failed to start timer. Please check your connection.");
+        });
+
+
+    if (!timerInterval) {
+        timerInterval = setInterval(() => {
+            elapsedSeconds++;
+            updateDisplay();
+        }, 1000);
+    }
+
+    phoneWarning.classList.add('hidden');
+});
+
+
+pause.addEventListener('click', () => {
+    pauseTimer();
+});
+
+
+
+function pauseTimer() {
+    if (!timerInterval) return;
+
+    fetch("/focusai/api/pause/")
+        .then(res => res.json())
+        .then(data => {
+            console.log("Pause response:", data);
+        });
+
+    clearInterval(timerInterval);
+    timerInterval = null;
+    stopPhoneDetectionPolling();
+
+    isPhoneDetectionActive = false;
+
+}
+
+
+stop.addEventListener('click', () => {
+    fetch("/focusai/api/stop/")
+        .then(res => res.json())
+        .then(data => {
+            console.log("Stop response:", data);
+
+            let focusMinutes = Math.floor(data.duration / 60);
+            let message = `Session completed!\n\n`;
+            message += `Focus time: ${focusMinutes} minutes\n`;
+            if (data.stats) {
+                message += `Phone interruptions: ${data.stats.phone_interruptions_today}\n`;
+                message += `Sessions today: ${data.stats.sessions_today}`;
+            }
+
+            alert(message);
+
+            clearInterval(timerInterval);
+            timerInterval = null;
+            elapsedSeconds = 0;
+            updateDebugPanel(data);
+
+            stopPhoneDetectionPolling();
+
+            isPhoneDetectionActive = false;
+            phoneWarning.classList.add('hidden');
+        })
+        .catch(err => {
+            console.error("Failed to stop timer:", err);
+
+            clearInterval(timerInterval);
+            timerInterval = null;
+            elapsedSeconds = 0;
+            updateDisplay();
+            stopPhoneDetectionPolling();
+        });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetch("/focusai/api/detection-status/")
+        .then(res => res.json())
+        .then(data => {
+            updateDebugPanel(data);
+        })
+        .catch(err => {
+            console.error("Failed to get initial status:", err);
+        });
+});
+
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden && isPhoneDetectionActive && tabsToggle.checked)
+    {
+        pauseTimer();
+    }
+});
+
+</script>
+</body></html>

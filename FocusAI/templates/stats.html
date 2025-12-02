@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FocusAI Weekly Stats</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#fe7474",
+              "background-light": "#f7f6f8",
+              "background-dark": "#0D0F14",
+              "accent-violet": "#c7b7ff"
+            },
+            fontFamily: {
+              "display": ["Space Grotesk"]
+            },
+            borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          },
+        },
+      };
+</script>
+<style>
+      .glow-effect {
+        box-shadow: 0 0 10px #f7f6f8, 0 0 20px #f7f6f8, 0 0 30px #f7f6f8;
+      }
+      .chart-bar {
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #fe7474, #ffa8a8);
+      }
+      .chart-bar:hover {
+        transform: scaleY(1.1);
+        filter: brightness(1.2);
+      }
+</style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30">
+<div class="relative min-h-screen w-full overflow-x-hidden">
+<div class="absolute inset-0 z-0 overflow-hidden">
+<div class="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 rounded-full bg-accent-violet/10 blur-[200px]"></div>
+</div>
+<div class="relative z-10 flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-white/10 px-10 py-5">
+<div class="flex items-center gap-4">
+<div class="h-8 w-8 bg-gradient-to-br rounded-lg flex items-center justify-center">
+<img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">FocusAI</h2>
+</div>
+<nav class="hidden md:flex flex-1 items-center justify-center gap-6">
+<a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:timer' %}">Timer</a>
+<a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:to-do' %}">To Do List</a>
+<a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:summarization' %}">Summarization</a>
+</nav>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:home' %}">Home</a>
+<a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:contact' %}">Contact Us</a>
+</div>
+<div class="flex items-center gap-6 md:hidden">
+<button class="text-white/70 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-4 py-12 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-7xl">
+<h1 class="text-4xl font-bold text-center tracking-[-0.02em] mb-12">Weekly Stats</h1>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="lg:col-span-2 rounded-xl bg-white/5 p-6 backdrop-blur-sm border border-white/10">
+    <h2 class="text-2xl font-bold mb-6">Focus Time This Week</h2>
+    <div class="h-80 flex items-end justify-between gap-3">
+      {% for day in user_stats.daily_chart_data %}
+<div class="flex flex-col items-center flex-1 min-w-0">
+  <div class="w-full flex flex-col justify-end h-64 mb-3">
+    <div class="chart-bar w-full rounded-t-md {% if day.is_highlight %}glow-effect{% endif %}" style="height: {{ day.height_percent }}%;"></div>
+  </div>
+  <span class="text-sm text-white/70 font-medium">{{ day.label }}</span>
+  <span class="text-xs text-white/50">{{ day.hours }}h</span>
+</div>
+{% endfor %}
+    </div>
+  </div>
+  <div class="space-y-6">
+    <div class="rounded-xl bg-white/5 p-6 backdrop-blur-sm border border-white/10">
+      <h3 class="text-lg font-bold text-white mb-3">Phone Detections</h3>
+      <p class="text-4xl font-bold text-accent-violet mb-1">{{ user_stats.phone_detections }}</p>
+      <p class="text-sm text-white/50">times this week</p>
+
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="rounded-xl bg-white/5 p-4 text-center backdrop-blur-sm border border-white/10">
+  <h3 class="text-sm font-bold text-white mb-2">Best Day</h3>
+  <p class="text-xl font-bold text-green-400">{{ user_stats.best_day }}</p>
+  <p class="text-xs text-white/50">{{ user_stats.best_day_time }}</p>
+</div>
+<div class="rounded-xl bg-white/5 p-4 text-center backdrop-blur-sm border border-white/10">
+  <h3 class="text-sm font-bold text-white mb-2">Worst Day</h3>
+  <p class="text-xl font-bold text-red-400">{{ user_stats.worst_day }}</p>
+  <p class="text-xs text-white/50">{{ user_stats.worst_day_time }}</p>
+</div>
+    </div>
+    <div class="rounded-xl bg-white/5 p-4 text-center backdrop-blur-sm border border-white/10">
+      <h3 class="text-sm font-bold text-white mb-2">Current Streak</h3>
+      <p class="text-2xl font-bold text-primary">{{ user_stats.current_streak }}</p>
+      <p class="text-xs text-white/50">days</p>
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+  <div class="lg:col-span-2 rounded-xl bg-white/5 p-6 backdrop-blur-sm border border-white/10">
+    <h2 class="text-2xl font-bold mb-6">Weekly Summary</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+      <div class="text-center p-4 rounded-lg bg-white/5">
+  <p class="text-3xl font-bold text-accent-violet">{{ user_stats.total_focus_time }}</p>
+  <p class="text-sm text-white/70 mt-1">Total Focus</p>
+</div>
+<div class="text-center p-4 rounded-lg bg-white/5">
+  <p class="text-3xl font-bold text-accent-violet">{{ user_stats.daily_average_time }}</p>
+  <p class="text-sm text-white/70 mt-1">Weekly Average</p>
+</div>
+<div class="text-center p-4 rounded-lg bg-white/5">
+  <p class="text-3xl font-bold text-green-400">{{ user_stats.longest_session_time }}</p>
+  <p class="text-sm text-white/70 mt-1">Longest Session</p>
+</div>
+      <div class="text-center p-4 rounded-lg bg-white/5">
+        <p class="text-3xl font-bold text-blue-400">{{ user_stats.goal_completion_percent }}<span class="text-lg text-white/50">%</span></p>
+        <p class="text-sm text-white/70 mt-1">Goal Completion</p>
+      </div>
+      <div class="text-center p-4 rounded-lg bg-white/5">
+        <p class="text-3xl font-bold text-yellow-400">{{ user_stats.sessions_completed }}</p>
+        <p class="text-sm text-white/70 mt-1">Sessions Completed</p>
+      </div>
+
+    </div>
+  </div>
+  <div class="rounded-xl bg-white/5 p-6 flex flex-col items-center justify-center backdrop-blur-sm border border-white/10">
+    <h2 class="text-xl font-bold mb-6 text-center">Focus vs Distraction</h2>
+    <div class="relative w-40 h-40">
+      <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+        <path class="text-white/10" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3"></path>
+        <path class="text-primary glow-effect" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="{{ user_stats.focus_percent }}, 100" stroke-linecap="round" stroke-width="4"></path>
+      </svg>
+      <div class="absolute inset-0 flex flex-col items-center justify-center">
+        <span class="text-3xl font-bold">{{ user_stats.focus_percent }}%</span>
+        <span class="text-sm text-white/70">Focus</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

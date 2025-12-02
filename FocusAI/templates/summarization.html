@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>FocusAI Summarization</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "background-dark": "#0D0F14",
+        "primary": "#fe7474",
+        "accent-indigo": "#c7b7ff",
+        "secondary": "#ffa8a8",
+        "text-main": "#ffffff",
+      },
+      fontFamily: {
+        "display": ["Space Grotesk"],
+      },
+      borderRadius: {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px",
+      },
+    },
+  },
+};
+</script>
+    <style>
+        .glow-effect {
+          box-shadow: 0 0 10px #fe7474, 0 0 25px #c7b7ff, 0 0 40px #fe7474;
+        }
+
+        
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #660fbd;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px theme('colors.primary'); }
+            50% { box-shadow: 0 0 20px theme('colors.primary'), 0 0 30px theme('colors.primary'); }
+        }
+
+        #summary-output ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #summary-output h2,
+        #summary-output h3 {
+            margin-top: 1.2rem;
+            margin-bottom: 0.6rem;
+        }
+
+    </style>
+</head>
+<body class="bg-background-dark font-display text-text-main selection:bg-primary/30">
+    <div class="relative min-h-screen w-full overflow-x-hidden">
+
+        
+        <div class="relative z-10 flex h-full grow flex-col">
+            <header class="flex items-center justify-between whitespace-nowrap border-b border-white/10 px-10 py-5">
+                <div class="flex items-center gap-4">
+                    <img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
+                    <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">FocusAI</h2>
+                </div>
+                <nav class="hidden md:flex flex-1 items-center justify-center gap-6">
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:timer'%}">Timer</a>
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:stats'%}">Stats</a>
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:to-do'%}">To Do List</a>
+                </nav>
+                <div class="hidden md:flex items-center gap-6">
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:home'%}">Home</a>
+                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:contact'%}">Contact Us</a>
+                </div>
+                <div class="flex items-center gap-6 md:hidden">
+                    <button class="text-white/70 hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-3xl">menu</span>
+                    </button>
+                </div>
+            </header>
+
+
+     <main class="flex flex-1 flex-col items-center gap-12 px-4 py-16 sm:px-6 lg:px-8">
+                <div class="w-full max-w-4xl space-y-8">
+                    <form method="POST" action="{% url 'focusai:summarize_text_api' %}" enctype="multipart/form-data" id="summarizeForm">
+                        <div>
+                            <label class="text-lg font-medium text-white/90" for="text-to-summarize">Enter text to summarize</label>
+                            <div class="mt-2">
+<textarea class="w-full rounded-lg border border-white/20 bg-white/5 p-4 text-white/90 placeholder-white/40 focus:border-primary focus:ring-primary focus:ring-opacity-50 transition-all resize-none" id="text-to-summarize" name="text" placeholder="Paste your text here or upload a file..." rows="8"></textarea>
+
+
+                                <input
+                                    type="file"
+                                    id="file-input"
+                                    name="uploaded_file"
+                                    class="hidden"
+                                    accept=".pdf,.docx,.txt"
+                                />
+
+                                <label for="file-input"
+                                    class="flex items-center justify-center mt-4 cursor-pointer">
+                                    <span class="flex items-center gap-2 px-6 py-2 border border-white/20 rounded-full text-white/90 hover:bg-white/10 hover:border-white/40 transition-all">
+                                        <span class="material-symbols-outlined text-lg">upload_file</span>
+                                        <span id="fileName">Upload File</span>
+                                    </span>
+                                </label>
+
+                                <div class="flex justify-center mt-6">
+                                    <button
+                                      type="submit"
+                                      id="summarize-btn"
+                                      class="flex items-center justify-center rounded-md bg-primary px-8 py-3 text-sm font-bold text-text-main shadow-lg shadow-primary/30 transition-all hover:bg-secondary hover:scale-105 hover:shadow-accent-indigo/40 disabled:opacity-50 disabled:cursor-not-allowed">
+                                      <span id="btn-text">Summarize</span>
+                                      <div id="loading-spinner" class="loading-spinner ml-2 hidden"></div>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="char-counter" class="mt-2 text-sm text-white/60">
+                                <span id="char-count">0</span> characters (minimum 100, maximum 50,000)
+                            </div>
+
+                        <!-- Progress bar for long texts -->
+                        <div id="progress-container" class="mt-4 hidden">
+                            <div class="flex items-center justify-between text-sm text-white/70 mb-2">
+                                <span id="progress-text">Processing...</span>
+                                <span id="progress-percent">0%</span>
+                            </div>
+                            <div class="w-full bg-white/10 rounded-full h-2">
+                                <div id="progress-bar" class="progress-bar h-2 bg-primary rounded-full pulse-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+
+
+
+                    <div>
+                        <label class="text-lg font-medium text-white/90" for="summary-output">Generated Summary</label>
+                        <div id="summary-output" class="mt-2 min-h-[200px] w-full rounded-lg border border-dashed border-white/20 bg-white/5 p-4">
+                            <p id="default-text" class="text-white/70">Your summary will appear here...</p>
+                        </div>
+                        <div id="summary-stats" class="mt-4 hidden">
+                            <div class="flex flex-wrap gap-4 text-sm text-white/60">
+                                <span>Original: <span id="original-length" class="text-white/80 font-medium"></span> characters</span>
+                                <span>Summary: <span id="summary-length" class="text-white/80 font-medium"></span> characters</span>
+                                <span>Compression: <span id="compression-ratio" class="text-accent-indigo font-medium"></span>%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="error-message" class="hidden p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-red-400">error</span>
+                            <p class="text-red-200" id="error-text"></p>
+                        </div>
+                    </div>
+
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textArea = document.getElementById('text-to-summarize');
+        const summarizeBtn = document.getElementById('summarize-btn');
+        const fileInput = document.getElementById('file-input');
+        const btnText = document.getElementById('btn-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const summaryOutput = document.getElementById('summary-output');
+        const defaultText = document.getElementById('default-text');
+        const charCount = document.getElementById('char-count');
+        const charCounter = document.getElementById('char-counter');
+        const summaryStats = document.getElementById('summary-stats');
+        const errorMessage = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const progressPercent = document.getElementById('progress-percent');
+        const form = document.getElementById('summarizeForm');
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault(); // STOP the page from navigating to the JSON
+
+            hideError();
+            setLoadingState(true);
+
+            const formData = new FormData();
+            formData.append("text", textArea.value);
+
+            if (fileInput.files.length > 0) {
+                formData.append("uploaded_file", fileInput.files[0]);
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Something went wrong");
+                }
+
+                displaySummary(data.summary, data);
+
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                setLoadingState(false);
+            }
+        });
+
+
+        let fileUploaded = false;
+        summarizeBtn.disabled = (textArea.value.length < 100 || textArea.value.length > 50000) && !fileUploaded;
+
+
+
+        textArea.addEventListener('input', function() {
+            const count = textArea.value.length;
+            charCount.textContent = count.toLocaleString();
+
+
+            if (count < 100) {
+                charCounter.className = 'mt-2 text-sm text-yellow-400';
+            } else if (count > 50000) {
+                charCounter.className = 'mt-2 text-sm text-red-400';
+            } else if (count > 10000) {
+                charCounter.className = 'mt-2 text-sm text-blue-400';
+                charCounter.innerHTML = `<span id="char-count">${count.toLocaleString()}</span> characters (will be processed in chunks)`;
+            } else {
+                charCounter.className = 'mt-2 text-sm text-green-400';
+            }
+            
+      
+            summarizeBtn.disabled = (textArea.value.length < 100 || textArea.value.length > 50000) && !fileUploaded;
+
+
+        });
+
+        fileInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                showError('File is too large. Maximum size is 5MB.');
+                return;
+            }
+
+            setLoadingState(true);
+
+            try {
+                const text = await extractTextFromFile(file);
+                document.getElementById('fileName').textContent = file.name;
+                fileUploaded = true;
+                hideError();
+            } catch (error) {
+                showError(`Failed to read file: ${error.message}`);
+            } finally {
+                setLoadingState(false);
+            }
+        });
+
+
+        async function extractTextFromFile(file) {
+            const type = file.type;
+
+            if (
+                type !== 'text/plain' &&
+                type !== 'application/pdf' &&
+                type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ) {
+                throw new Error('Unsupported file type. Please upload .txt, .pdf, or .docx files.');
+            }
+
+        }
+
+
+        function simulateProgress() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) {
+                    progress = 90;
+                }
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = Math.round(progress) + '%';
+
+                if (progress >= 90) {
+                    clearInterval(interval);
+                }
+            }, 500);
+
+            return interval;
+        }
+
+
+
+
+        function setLoadingState(loading) {
+            if (loading) {
+                btnText.textContent = 'Summarizing...';
+                loadingSpinner.classList.remove('hidden');
+                summarizeBtn.disabled = true;
+                summarizeBtn.classList.add('pulse-glow');
+            } else {
+                btnText.textContent = 'Summarize';
+                loadingSpinner.classList.add('hidden');
+                summarizeBtn.classList.remove('pulse-glow');
+                summarizeBtn.disabled = (textArea.value.length < 100 || textArea.value.length > 50000) && !fileUploaded;
+
+            }
+        }
+
+        function displaySummary(summary, data) {
+            // Hide default text and show summary
+            defaultText.style.display = 'none';
+
+            // Create summary content
+            const summaryContent = document.createElement('div');
+            summaryContent.className = 'text-white/90 fade-in leading-relaxed';
+            summaryContent.innerHTML = summary;
+
+            // Clear and add new content
+            summaryOutput.innerHTML = '';
+            summaryOutput.appendChild(summaryContent);
+
+            // Update summary border to solid
+            summaryOutput.className = 'mt-2 min-h-[200px] w-full rounded-lg border border-primary/30 bg-white/5 p-4';
+
+            // Show statistics
+            if (data.original_length && data.summary_length && data.compression_ratio !== undefined) {
+                document.getElementById('original-length').textContent = data.original_length.toLocaleString();
+                document.getElementById('summary-length').textContent = data.summary_length.toLocaleString();
+                document.getElementById('compression-ratio').textContent = data.compression_ratio;
+                summaryStats.classList.remove('hidden');
+            }
+
+            // Smooth scroll to summary
+            summaryOutput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function showError(message) {
+            if (!message) {
+                hideError();
+                return;
+            }
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+
+            // Smooth scroll to error
+            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Auto-hide error after 8 seconds
+            setTimeout(() => {
+                hideError();
+            }, 8000);
+        }
+
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        function getCsrfToken() {
+            // Try to get CSRF token from cookie
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+
+            // Try to get from meta tag if cookie not found
+            const metaTag = document.querySelector('meta[name="csrf-token"]');
+            if (metaTag) {
+                return metaTag.getAttribute('content');
+            }
+
+            // Return empty string if no CSRF token found - Django will handle this
+            return '';
+        }
+    });
+
+
+    </script>
+</body>
+</html>

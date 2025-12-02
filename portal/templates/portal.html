@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MetaCog OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#fe7474",
+            "secondary": "#c7b7ff",
+            "background-dark": "#0D0F14",
+            "tv-pink": "#fe7474",
+            "tv-blue": "#c7b7ff",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+    .icon-sm {
+      font-size: 20px;
+    }
+    .icon-md {
+      font-size: 28px;
+    }
+    .icon-lg {
+        font-size: 32px;
+    }
+    html
+    {
+        scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body class="bg-background-dark text-white font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="w-full">
+    <nav class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 grid grid-cols-3 items-center gap-4">
+        <!-- LEFT: Fixed position logo -->
+        <div class="flex items-center gap-2">
+            <img src="{% static 'assets/iris.png' %}" class="h-8 w-8" alt="iris" />
+            <a href="{% url 'portal:home' %}">
+                <span class="font-bold text-lg whitespace-nowrap">MetaCog<span class="text-slate-400"> OS</span></span>
+            </a>
+        </div>
+
+        <!-- CENTER: Always centered buttons -->
+            <div class="flex items-center justify-center gap-4 -ml-12">
+                <a class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-tv-pink/20 text-tv-pink text-sm font-bold leading-normal tracking-[0.015em] transition-all duration-300 hover:bg-tv-pink/30 focus:outline-none focus:ring-2 focus:ring-tv-pink focus:ring-offset-2 focus:ring-offset-background-dark" href="{% url 'focusai:home' %}">
+                    <span class="truncate">Cognitive Discipline</span>
+                </a>
+                <a class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-tv-blue/20 text-tv-blue text-sm font-bold leading-normal tracking-[0.015em] transition-all duration-300 hover:bg-tv-blue/30 focus:outline-none focus:ring-2 focus:ring-tv-blue focus:ring-offset-2 focus:ring-offset-background-dark" href="{% url 'saathi:home' %}">
+                    <span class="truncate">Cognitive Training</span>
+                </a>
+            </div>
+
+        <!-- RIGHT: Auth buttons (varying width won't affect center) -->
+        <div id="top-right" class="hidden md:flex items-center gap-3 justify-end">
+            {% if not username %}
+                <a class="text-slate-400 hover:text-white transition-colors text-sm font-medium whitespace-nowrap" href="{% url 'portal:login' %}">Log in</a>
+                <a class="text-slate-400 hover:text-white transition-colors text-sm font-medium whitespace-nowrap" href="{% url 'portal:signup' %}">Sign up</a>
+            {% else %}
+                <span id="logged-in" class="text-sm text-white/80 whitespace-nowrap">Logged in as <strong>{{ username }}</strong></span>
+                <a class="text-white bg-white/10 px-4 py-2 rounded-md hover:bg-white/20 transition-colors text-sm font-medium whitespace-nowrap" href="{% url 'portal:contact' %}">Contact Us</a>
+                <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap" href="{% url 'portal:logout' %}">Log Out</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="w-full border-b border-white/10"></div>
+</header>
+<main class="flex-1 flex flex-col items-center px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+<div class="layout-content-container flex flex-col w-full max-w-4xl mx-auto items-center gap-20 sm:gap-28">
+<div class="flex flex-col items-center text-center gap-6 w-full">
+<h1 class="text-white tracking-tighter text-5xl sm:text-7xl font-bold leading-tight">MetaCog<span class="text-slate-400"> OS</span></h1>
+<p class="text-slate-300 text-lg sm:text-xl max-w-2xl font-medium">Your cognitive OS for a sharper mind, smoother workflows, and intentional learning.</p>
+<div class="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 justify-center w-full max-w-md pt-6">
+<a class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-8 bg-tv-pink text-slate-950 text-base font-bold leading-normal tracking-[0.015em] grow transition-all duration-300 hover:bg-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-tv-pink focus:ring-offset-2 focus:ring-offset-background-dark" href="{% url 'focusai:home' %}">
+<span class="truncate">Cognitive Discipline</span>
+</a>
+<a class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-8 bg-tv-blue text-slate-950 text-base font-bold leading-normal tracking-[0.015em] grow transition-all duration-300 hover:bg-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-tv-blue focus:ring-offset-2 focus:ring-offset-background-dark" href="{% url 'saathi:home' %}">
+<span class="truncate">Cognitive Training</span>
+</a>
+</div>
+</div>
+<div class="w-full flex flex justify-end">
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 w-full max-w-3xl">
+<a class="group flex flex-col items-center justify-center gap-3 p-4 bg-white/5 rounded-lg text-slate-300 transition-all duration-300 hover:bg-tv-pink/10 hover:text-white" href="#FocusAI">
+<span class="material-symbols-outlined icon-md text-tv-pink transition-colors duration-300 group-hover:text-tv-pink">auto_awesome</span>
+<p class="text-sm font-medium text-center">FocusAI</p>
+</a>
+<a class="group flex flex-col items-center justify-center gap-3 p-4 bg-white/5 rounded-lg text-slate-300 transition-all duration-300 hover:bg-tv-blue/10 hover:text-white" href="#Saathi">
+<span class="material-symbols-outlined icon-md text-tv-blue transition-colors duration-300 group-hover:text-tv-blue">group</span>
+<p class="text-sm font-medium text-center">SaathiAI</p>
+</a>
+<a class="group flex flex-col items-center justify-center gap-3 p-4 bg-white/5 rounded-lg text-slate-300 transition-all duration-300 hover:bg-white/10 hover:text-white" href="{% url 'portal:contact' %}">
+<span class="material-symbols-outlined icon-md text-[#ffa8a8] transition-colors duration-300 group-hover:text-white">call</span>
+<p class="text-sm font-medium text-center">Contact</p>
+</a>
+<a class="group flex flex-col items-center justify-center gap-3 p-4 bg-white/5 rounded-lg text-slate-300 transition-all duration-300 hover:bg-white/10 hover:text-white" href="#">
+<span class="material-symbols-outlined icon-md text-slate-400 transition-colors duration-300 group-hover:text-white">auto_stories</span>
+<p class="text-sm font-medium text-center">Documentation</p>
+</a>
+</div>
+</div>
+<div class="w-full flex flex-col items-center gap-10 text-center border-y border-white/10 py-16">
+<p class="text-slate-300 max-w-2xl text-lg sm:text-xl leading-relaxed">MetaCog is a cognitive operating system that helps users build discipline, improve reasoning, and create personal mental systems.</p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-4xl">
+<div class="flex flex-col items-center gap-3">
+<span class="material-symbols-outlined icon-lg text-tv-pink">target</span>
+<h3 class="font-bold text-xl text-white">Cognitive Discipline</h3>
+</div>
+<div class="flex flex-col items-center gap-3">
+<span class="material-symbols-outlined icon-lg text-tv-blue">model_training</span>
+<h3 class="font-bold text-xl text-white">Cognitive Training</h3>
+</div>
+<div class="flex flex-col items-center gap-3">
+    <span class="material-symbols-outlined icon-lg text-slate-400">space_dashboard</span>
+    <h3 class="font-bold text-xl text-white">???</h3>
+    <p class="text-sm text-slate-500">Coming soon!</p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row justify-center gap-8 pt-6">
+<div class="flex items-center gap-4 text-left">
+<span class="material-symbols-outlined icon-md text-tv-pink">timer</span>
+<div>
+<p class="font-bold text-white text-lg">Intentional Work Blocks</p>
+<p class="text-sm text-slate-400">Principle of Discipline</p>
+</div>
+</div>
+<div class="flex items-center gap-4 text-left">
+<span class="material-symbols-outlined icon-md text-tv-blue">psychology_alt</span>
+<div>
+<p class="font-bold text-white text-lg">Guided Reasoning</p>
+<p class="text-sm text-slate-400">Principle of Training</p>
+</div>
+</div>
+</div>
+</div>
+<div id="FocusAI" class="w-full flex flex-col gap-6 max-w-4xl">
+<div class="bg-white/5 rounded-xl p-6 sm:p-8 flex flex-col gap-3 border border-transparent transition-all hover:border-tv-pink/50">
+<h3 class="font-bold text-2xl text-tv-pink">FocusAI: Your Cognitve Discipline Engine</h3>
+<p class="text-slate-300 leading-loose">FocusAI is your discipline engine. It helps you plan your sessions, measure your focus, track interruptions, and actually stay in the work. You get accountabilty, <strong>phone-based distraction prevention, visualization of progress, time management tools. </strong> Basically, everything built around ensuring you get your work done instead of focusing just on aesthetics. <strong>It’s the part of MetaCog that keeps you consistent, stable, and intentional.</strong></p>
+</div>
+<div class="bg-white/5 rounded-xl p-6 sm:p-8 flex flex-col gap-3 border border-transparent transition-all hover:border-tv-blue/50">
+<h3 id="Saathi" class="font-bold text-2xl text-tv-blue">SaathiAI: Your Cognitive Training Companion</h3>
+<p class="text-slate-300 leading-loose">SaathiAI is your cognitive training companion. <strong> It strengthens your problem-solving skills without making you dependent on AI. </strong> Instead of giving you answers, Saathi guides your reasoning, points out conceptual gaps, and helps you think independently. You also get a <strong>Smart Quiz Generator for MCQs from any material, Context-aware STEM doubt guidance, Skill tracking &amp; accuracy analytics.</strong> It’s built to reduce AI dependency and increase actual intelligence.</p>
+</div>
+</div>
+</div>
+</main>
+<footer class="flex flex-col gap-6 px-5 py-8 text-center w-full max-w-4xl mx-auto border-t border-white/10">
+<p class="text-slate-500 text-sm font-normal leading-normal">Version 1.0.0 © 2025 MetaCog OS</p>
+</footer>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Saathi - Progress</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#fe7474",
+                        secondary: "#ffa8a8",
+                        "accent-1": "#c7b7ff",
+                        "background-dark": "#0D0F14",
+                        "text-main": "#ffffff",
+                    },
+                    fontFamily: {
+                        display: ["Space Grotesk", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "8px",
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+<body class="font-display bg-background-dark text-text-main antialiased">
+<div class="flex flex-col min-h-screen">
+<header class="w-full  mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<nav class="flex items-center justify-between">
+<a class="flex items-center space-x-2" href="{% url 'saathi:home' %}">
+<img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="font-bold text-xl text-text-main">Saathi</span>
+</a>
+<div class="hidden md:flex items-center justify-center flex-1 space-x-6">
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:chat' %}">Chat</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:quiz_gen' %}">Make a Quiz</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:take_quiz' %}">Take a Quiz</a>
+</div>
+<div class="hidden md:flex items-center space-x-6">
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:home' %}">Home</a>
+<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:contact' %}">Contact Us</a>
+</div>
+<button class="md:hidden">
+<span class="material-icons-outlined text-text-main">menu</span>
+</button>
+</nav>
+</header>
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="flex flex-col items-center text-center mb-12">
+<h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-text-main mb-3">Your Progress</h1>
+<p class="text-lg text-gray-400 max-w-2xl">Track your performance, identify areas for improvement, and stay motivated on your learning journey.</p>
+</div>
+<div class="bg-gray-900/40 border border-gray-800 rounded-lg p-6 sm:p-8 mb-8">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+<h2 class="text-2xl font-bold text-text-main mb-4 sm:mb-0">Accuracy Over Time</h2>
+<div class="flex items-center space-x-1 bg-background-dark border border-gray-700 rounded-full p-1">
+<button class="chart-btn px-4 py-1.5 text-sm font-medium rounded-full text-gray-300 hover:bg-gray-800 transition-colors" data-range="10">10</button>
+<button class="chart-btn px-4 py-1.5 text-sm font-medium rounded-full bg-primary text-background-dark transition-colors active" data-range="15">15</button>
+<button class="chart-btn px-4 py-1.5 text-sm font-medium rounded-full text-gray-300 hover:bg-gray-800 transition-colors" data-range="20">20</button>
+<button class="chart-btn px-4 py-1.5 text-sm font-medium rounded-full text-gray-300 hover:bg-gray-800 transition-colors" data-range="25">25</button>
+<button class="chart-btn px-4 py-1.5 text-sm font-medium rounded-full text-gray-300 hover:bg-gray-800 transition-colors" data-range="30">30</button>
+</div>
+</div>
+<div class="w-full h-80 bg-background-dark/50 rounded-lg p-4">
+<canvas id="accuracyChart"></canvas>
+</div>
+</div>
+</div>
+<div class="bg-gray-900/40 border border-gray-800 rounded-lg p-6 sm:p-8">
+<h2 class="text-2xl font-bold text-text-main mb-6">Overall Statistics</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-background-dark p-6 rounded-lg border border-gray-700">
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Total Quizzes Taken</p>
+<p class="text-4xl font-bold text-accent-1">{{ total_quizzes }}</p>
+</div>
+<div class="bg-background-dark p-6 rounded-lg border border-gray-700">
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Total Questions Answered</p>
+<p class="text-4xl font-bold text-accent-1">{{ total_questions }}</p>
+</div>
+<div class="bg-background-dark p-6 rounded-lg border border-gray-700">
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Improvement</p>
+<p class="text-4xl font-bold text-primary flex items-center">{{ improvement }}
+                        <span class="material-icons-outlined text-green-400 ml-2">trending_up</span>
+</p>
+</div>
+<div class="bg-background-dark p-6 rounded-lg border border-gray-700">
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Average Accuracy</p>
+<p class="text-4xl font-bold text-secondary">{{ avg_acc }}%</p>
+</div>
+<div class="bg-background-dark p-6 rounded-lg border border-gray-700">
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Best Score</p>
+<p class="text-4xl font-bold text-secondary">{{ best_acc }}%</p>
+</div>
+<div class="bg-background-dark p-6 rounded-lg border border-gray-700">
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Current Streak</p>
+<p class="text-4xl font-bold text-secondary flex items-center">{{ streak }}
+                        <span class="material-icons-outlined text-yellow-400 ml-2">local_fire_department</span>
+</p>
+</div>
+</div>
+</div>
+</main>
+<footer class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-800 mt-auto">
+<div class="flex flex-col sm:flex-row items-center justify-between">
+<div class="flex items-center space-x-2">
+ <img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="font-bold text-xl text-text-main">Saathi</span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mt-4 sm:mt-0">
+                © 2025 Saathi. All rights reserved.
+            </p>
+</div>
+</footer>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+const allAccuracies = {{ accuracies|safe }};
+
+let chart;
+
+function createChart(range) 
+{
+    const ctx = document.getElementById('accuracyChart').getContext('2d');
+    
+ 
+    const data = allAccuracies.slice(0, range).reverse();
+    const labels = Array.from({length: data.length}, (_, i) => `Quiz ${i + 1}`);
+    
+
+    if (chart) 
+    {
+        chart.destroy();
+    }
+    
+    chart = new Chart(ctx, 
+    {
+        type: 'line',
+        data: 
+        {
+            labels: labels,
+            datasets: [{
+                label: 'Accuracy (%)',
+                data: data,
+                borderColor: '#fe7474',
+                backgroundColor: 'rgba(254, 116, 116, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#fe7474',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: 
+        {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: 
+            {
+                legend: 
+                {
+                    display: false
+                },
+                tooltip: 
+                {
+                    backgroundColor: 'rgba(13, 15, 20, 0.9)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: '#fe7474',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: false
+                }
+            },
+            scales: 
+            {
+                y: 
+                {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: 
+                    {
+                        color: '#9ca3af',
+                        callback: function(value) 
+                        {
+                            return value + '%';
+                        }
+                    },
+                    grid: 
+                    {
+                        color: 'rgba(156, 163, 175, 0.1)'
+                    }
+                },
+                x: 
+                {
+                    ticks: 
+                    {
+                        color: '#9ca3af'
+                    },
+                    grid: 
+                    {
+                        color: 'rgba(156, 163, 175, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+createChart(15);
+
+
+document.querySelectorAll('.chart-btn').forEach(button => 
+{
+    button.addEventListener('click', function() 
+    {
+
+        document.querySelectorAll('.chart-btn').forEach(btn => 
+        {
+            btn.classList.remove('bg-primary', 'text-background-dark', 'active');
+            btn.classList.add('text-gray-300');
+        });
+        
+     
+        this.classList.add('bg-primary', 'text-background-dark', 'active');
+        this.classList.remove('text-gray-300');
+        
+
+        const range = parseInt(this.dataset.range);
+        createChart(range);
+    });
+});
+</script>
+
+</body></html>

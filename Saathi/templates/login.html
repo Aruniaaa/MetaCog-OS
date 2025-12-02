@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login </title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .gradient-bg {
+      background-image: radial-gradient(at 20% 25%, hsla(271, 100%, 87%, 0.1) 0px, transparent 50%),
+                        radial-gradient(at 80% 20%, hsla(0, 99%, 75%, 0.1) 0px, transparent 50%),
+                        radial-gradient(at 50% 80%, hsla(271, 100%, 87%, 0.15) 0px, transparent 50%);
+    }
+  </style>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#fe7474",
+            "background-light": "#f5f5f5",
+            "background-dark": "#0D0F14",
+            "accent-1": "#c7b7ff",
+            "secondary": "#ffa8a8",
+            "text-main": "#ffffff"
+          },
+          fontFamily: {
+            display: ["Space Grotesk", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "8px",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-800 dark:text-text-main antialiased selection:bg-primary/30">
+<div class="relative min-h-screen w-full overflow-hidden">
+<div class="absolute inset-0 gradient-bg"></div>
+<header class="relative z-10 p-4 sm:p-6">
+<nav class="container mx-auto flex justify-between items-center">
+<a class="flex items-center gap-3" href="{% url 'saathi:home' %}">
+<img src="{% static 'flower.png' %}" class="h-10 w-10" />
+<span class="text-xl font-bold text-gray-100">Saathi</span>
+</a>
+    <a class="px-4 py-2 text-sm font-medium text-gray-300 dark:text-gray-300 hover:text-white dark:hover:text-white transition-colors" href="{% url 'saathi:contact' %">
+          Contact
+        </a>
+</nav>
+</header>
+<main class="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-100px)] px-4">
+<div class="w-full max-w-sm">
+<div class="text-center mb-10">
+<h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h1>
+<p class="text-gray-600 dark:text-gray-400">Log in to learn with Saathi.</p>
+</div>
+     {% if message %}
+        <div class="mb-6 p-4 rounded-md bg-red-500/10 border border-red-500/20">
+          <p class="text-sm text-red-400 text-center">{{ message }}</p>
+        </div>
+        {% endif %}
+<form action="{% url 'saathi:login' %}" class="space-y-6" method="POST">
+  {% csrf_token %}
+<div>
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="email">Email address</label>
+<input class="block w-full rounded-md border-0 py-2.5 px-3 bg-white/5 dark:bg-white/5 text-gray-900 dark:text-white ring-1 ring-inset ring-white/10 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-primary transition-all sm:text-sm" id="email" name="email" placeholder="you@example.com" required="" type="email"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="password">Password</label>
+<input class="block w-full rounded-md border-0 py-2.5 px-3 bg-white/5 dark:bg-white/5 text-gray-900 dark:text-white ring-1 ring-inset ring-white/10 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-primary transition-all sm:text-sm" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+<div>
+<button class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background-dark focus:ring-primary transition-all" type="submit">
+              Login
+            </button>
+</div>
+</form>
+<div class="mt-8 text-center">
+<p class="text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?
+            <a class="font-medium text-primary hover:text-opacity-80 transition-colors" href="{% url 'signup' %}">
+              Create an Account
+            </a>
+</p>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

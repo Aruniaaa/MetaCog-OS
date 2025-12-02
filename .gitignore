@@ -1,0 +1,7 @@
+venv/
+
+.env
+
+FocusAI/cnn-models
+
+__pycache__/
