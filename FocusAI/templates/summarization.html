@@ -1,122 +1,9 @@
-<!DOCTYPE html>
+{% extends 'navbar.html' %}
 {% load static %}
-<html class="dark" lang="en" xmlns="http://www.w3.org/1999/html">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>FocusAI Summarization</title>
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-tailwind.config = {
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        "background-dark": "#0D0F14",
-        "primary": "#fe7474",
-        "accent-indigo": "#c7b7ff",
-        "secondary": "#ffa8a8",
-        "text-main": "#ffffff",
-      },
-      fontFamily: {
-        "display": ["Space Grotesk"],
-      },
-      borderRadius: {
-        "DEFAULT": "0.25rem",
-        "lg": "0.5rem",
-        "xl": "0.75rem",
-        "full": "9999px",
-      },
-    },
-  },
-};
-</script>
-    <style>
-        .glow-effect {
-          box-shadow: 0 0 10px #fe7474, 0 0 25px #c7b7ff, 0 0 40px #fe7474;
-        }
 
-        
-        .loading-spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #660fbd;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .progress-bar {
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        
-        .pulse-glow {
-            animation: pulse-glow 2s infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 5px theme('colors.primary'); }
-            50% { box-shadow: 0 0 20px theme('colors.primary'), 0 0 30px theme('colors.primary'); }
-        }
+{% block title %}FocusAI - Summarization {% endblock %}
 
-        #summary-output ul {
-            list-style-type: disc;
-            margin-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        #summary-output h2,
-        #summary-output h3 {
-            margin-top: 1.2rem;
-            margin-bottom: 0.6rem;
-        }
-
-    </style>
-</head>
-<body class="bg-background-dark font-display text-text-main selection:bg-primary/30">
-    <div class="relative min-h-screen w-full overflow-x-hidden">
-
-        
-        <div class="relative z-10 flex h-full grow flex-col">
-            <header class="flex items-center justify-between whitespace-nowrap border-b border-white/10 px-10 py-5">
-                <div class="flex items-center gap-4">
-                    <img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
-                    <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">FocusAI</h2>
-                </div>
-                <nav class="hidden md:flex flex-1 items-center justify-center gap-6">
-                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:timer'%}">Timer</a>
-                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:stats'%}">Stats</a>
-                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:to-do'%}">To Do List</a>
-                </nav>
-                <div class="hidden md:flex items-center gap-6">
-                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:home'%}">Home</a>
-                    <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:contact'%}">Contact Us</a>
-                </div>
-                <div class="flex items-center gap-6 md:hidden">
-                    <button class="text-white/70 hover:text-white transition-colors">
-                        <span class="material-symbols-outlined text-3xl">menu</span>
-                    </button>
-                </div>
-            </header>
+{% block content %}
 
 
      <main class="flex flex-1 flex-col items-center gap-12 px-4 py-16 sm:px-6 lg:px-8">
@@ -197,8 +84,11 @@ tailwind.config = {
 
                 </div>
             </main>
-        </div>
-    </div>
+
+{% endblock %}
+
+
+{% block extra_js %}
 
    <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -306,7 +196,7 @@ tailwind.config = {
             }
         });
 
-
+        // TODO: fix this, we support pdf and .docx too
         async function extractTextFromFile(file) {
             const type = file.type;
 
@@ -429,5 +319,5 @@ tailwind.config = {
 
 
     </script>
-</body>
-</html>
+
+{% endblock %}

@@ -3,10 +3,10 @@
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>FocusAI - AI-Powered Cognitive Discipline System</title>
+<title>FocusAI</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
 <style type="text/tailwindcss">
@@ -45,7 +45,7 @@
             "text-main": "var(--text-main-cognitive-ink)",
           },
           fontFamily: {
-            display: ["Lexend", "sans-serif"],
+            display: ["Space Grotesk", "sans-serif"],
           },
           borderRadius: {
             DEFAULT: "0.5rem",
@@ -58,7 +58,7 @@
   </script>
 <style>
     body {
-      font-family: 'Lexend', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
     }
     .icon-bg {
       background-color: rgba(254, 116, 116, 0.1);
@@ -77,7 +77,7 @@
     </div>
 
     <!-- Center Navigation -->
-    <nav class="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
+    <nav class="hidden md:flex flex-1 items-center justify-center absolute left-1/2 -translate-x-1/2">
       <div class="flex items-center gap-8">
           <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'focusai:timer' %}">Timer</a>
         <a class="text-sm font-medium text-white/70 transition-colors hover:text-white" href="{% url 'focusai:summarization' %}">Summarization</a>
@@ -94,6 +94,7 @@
               <span id="logged-in" class="text-sm text-white/80">Logged in as <strong>{{ username }}</strong></span>
               <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'focusai:contact' %}">Contact Us</a>
               <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'focusai:logout' %}">Log Out</a>
+            <a class="text-sm font-medium bg-primary text-white py-1.5 px-3 rounded-md hover:opacity-90 transition-opacity" href="{% url 'focusai:settings' %}">Settings</a>
             {% endif %}
           </div>
         </div>
@@ -112,7 +113,7 @@
             AI-powered productivity system that prevents smartphone distractions in real-time while providing <span class="text-accent-1 font-medium">statistical insights</span> to help you focus sessions and <span class="text-accent-1 font-medium">minimize</span> doomscrolling.
           </p>
 <div class="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
-<a class="bg-primary text-gray-900 font-semibold py-3 px-6 rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2 w-full sm:w-auto justify-center" href="{% url 'focusai:timer' %}">
+<a class="bg-primary text-gray-900 font-semibold py-3 px-6 rounded-lg shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center gap-2 w-full sm:w-auto justify-center" href="#">
               Start a focus session
               <span class="material-symbols-outlined">arrow_forward</span>
 </a>
@@ -190,7 +191,7 @@
 <p class="text-sm text-gray-400 mb-6">Part of <a class="font-semibold text-accent-1 hover:underline" href="{% url 'portal:home' %}">MetaCog</a></p>
 <div class="flex justify-center gap-6 mb-8 text-sm text-gray-400">
 <a class="hover:text-text-main transition-colors" href="#features">Features</a>
-<a class="hover:text-text-main transition-colors" href="{% url 'saathi:contact' %}">Contact</a>
+<a class="hover:text-text-main transition-colors" href="{% url 'focusai:contact' %}">Contact</a>
 </div>
 <p class="text-sm text-gray-500">© 2025 FocusAI by MetaCog. All rights reserved.</p>
 </div>

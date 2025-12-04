@@ -59,7 +59,48 @@ def summarization(request):
 
 
 def contact(request):
-    return render(request, "contact.html", {})
+    return render(request, "contact-focusai.html", {})
+
+
+@csrf_exempt
+@login_required
+def settings(request):
+
+    user_id = request.session.get("user_id")
+    user = Profile.objects.get(supabase_id=user_id)
+
+    if request.method == "GET":
+
+
+        context = {
+            "detect_phones" : user.detect_tabs,
+            "detect_tabs" : user.detect_tabs,
+            "weekly_goal_hour" : user.weekly_goal_hour
+        }
+
+        return render(request, "settings.html", context)
+
+    elif request.method == "POST":
+
+        data = request.body
+
+        data = json.loads(data)
+        print(data)
+
+        try:
+
+            user.weekly_goal_hour = int(data["goal_hour"]) if data["goal_hour"] != '' else user.weekly_goal_hour
+            user.detect_phones = data["detectPhones"]
+            user.detect_tabs = data["detectTabs"]
+
+            user.save()
+
+            return JsonResponse({"response": 200})
+
+        except Exception as e:
+            print(e)
+            return JsonResponse({"response": 500})
+
 
 
 @csrf_exempt
@@ -300,22 +341,31 @@ def phone_detected(request):
 
 def get_detection_status(request):
 
-    print("Inside the function")
+
     stats, user_id = get_or_create_user(request)
+
     
-    print("Got the stats and user id")
+    user = Profile.objects.get(supabase_id=user_id)
+
+    detect_phones = user.detect_phones
+    detect_tabs = user.detect_tabs
+    
+
     elapsed = time.time() - phone_detector.start_time if hasattr(phone_detector, 'start_time') else 1
     frame_rate = phone_detector.frame_count / elapsed if hasattr(phone_detector, 'frame_count') and elapsed > 0 else 0
 
     phone_detector_response = phone_detector.get_detection_stats()
 
-    print("GOT THE DETECTION STATS FROM THE OBJECT")
+
     avg_conf = phone_detector_response["avg_recent_confidence"]
 
     high_conf_count = phone_detector_response["high_confidence_count"]
 
 
     should_pause, debug_info = phone_detector.should_trigger_detection()
+    
+
+    should_pause = False if not detect_phones else should_pause
     
     
     response_data = {
@@ -336,11 +386,10 @@ def get_detection_status(request):
             "focus_time_today": round(stats.total_focus_time_day),
             "focus_time_hours": round(stats.total_focus_time_day / 3600, 2)
         },
-        "should_pause" : should_pause
+        "should_pause" : should_pause,
+        "detect_tabs": detect_tabs,
     }
 
-    print(f"""---------- THE RESPONSE OBJECT IS -------------
-            {response_data}""")
 
 
     return JsonResponse(response_data)

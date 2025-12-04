@@ -22,3 +22,4 @@ langchain-community
 langchain-anthropic
 langchain_google_genai
 chromadb
+cerebras-cloud-sdk

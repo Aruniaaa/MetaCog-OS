@@ -1,66 +1,37 @@
-<!DOCTYPE html>
+{% extends 'navbar-saathi.html' %}
 {% load static %}
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Saathi - Quiz Submitted</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 
-<script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#fe7474",
-                        "background-light": "#ffffff",
-                        "background-dark": "#0D0F14",
-                        "accent-1": "#c7b7ff",
-                        secondary: "#ffa8a8",
-                        "text-main": "#ffffff",
-                        "text-light": "#1f2937",
-                        "text-dark": "#ffffff"
-                    },
-                    fontFamily: {
-                        display: ["Space Grotesk", "sans-serif"],
-                    },
-                    borderRadius: {
-                        DEFAULT: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-</head>
-<body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark antialiased">
-<div class="flex flex-col min-h-screen">
-<header class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-<nav class="flex items-center justify-between">
-<a class="flex items-center space-x-2" href="{% url 'saathi:home' %}">
-<img src="{% static 'flower.png' %}" class="h-10 w-10" />
-<span class="font-bold text-xl text-text-light dark:text-text-dark">Saathi</span>
-</a>
-<div class="hidden md:flex items-center justify-center flex-1 space-x-6">
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:chat' %}">Chat</a>
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:take_quiz' %}">Take a Quiz</a>
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:quiz_gen' %}">Make a Quiz</a>
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:progress' %}">Progress</a>
-</div>
-<div class="hidden md:flex items-center space-x-6">
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:home' %}">Home</a>
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:contact' %}">Contact Us</a>
-</div>
-<button class="md:hidden">
-<span class="material-icons-outlined text-text-light dark:text-text-dark">menu</span>
-</button>
-</nav>
-</header>
+{% block title %}Take a Quiz{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Prose styles for feedback content */
+    .prose-invert {
+      color: #d1d5db;
+    }
+
+    .prose-p\:my-2 p {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .prose-headings\:text-accent-1 h1,
+    .prose-headings\:text-accent-1 h2,
+    .prose-headings\:text-accent-1 h3,
+    .prose-headings\:text-accent-1 h4,
+    .prose-headings\:text-accent-1 h5,
+    .prose-headings\:text-accent-1 h6 {
+      color: #c7b7ff;
+    }
+
+    .prose-strong\:text-text-main strong {
+      color: #ffffff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
 <main class="flex-grow flex items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
 <section class="w-full max-w-2xl mx-auto text-center">
 <div class="mb-10">
@@ -86,7 +57,7 @@
     <div class="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-4">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-full bg-accent-1 flex items-center justify-center text-background-dark flex-shrink-0">
-                <span class="material-symbols-outlined text-3xl">psychology</span>
+                <span class="material-icons-outlined text-3xl">psychology</span>
             </div>
             <div>
                 <h2 class="text-xl font-bold text-text-main">AI-Generated Feedback</h2>
@@ -95,7 +66,7 @@
         </div>
         <button @click="open = !open" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-secondary/20 text-secondary font-bold rounded-DEFAULT hover:bg-secondary/30 transition-colors">
             <span x-text="open ? 'Hide Feedback' : 'Click me for improvement'">Click me for improvement</span>
-            <span :class="{'rotate-180': open}" class="material-symbols-outlined transition-transform">expand_more</span>
+            <span :class="{'rotate-180': open}" class="material-icons-outlined transition-transform">expand_more</span>
         </button>
     </div> <!-- This closing div was missing -->
 
@@ -147,7 +118,11 @@
             </p>
 </div>
 </footer>
-</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
 <script>
     function copyToClipboard() {
         const promptText = document.getElementById('prompt-text').innerText;
@@ -173,4 +148,4 @@
 
 </script>
 
-</body></html>
+{% endblock %}

@@ -79,6 +79,11 @@
 <h1 class="text-white tracking-tighter text-4xl sm:text-5xl font-bold leading-tight">Log In to MetaCog OS</h1>
 <p class="text-slate-300 text-lg max-w-2xl font-medium">Continue your cognitive discipline and training.</p>
 </div>
+      {% if message %}
+        <div class="mb-6 p-4 rounded-md bg-red-500/10 border border-red-500/20">
+          <p class="text-sm text-red-400 text-center">{{ message }}</p>
+        </div>
+        {% endif %}
 <form action="{% url 'portal:login' %}" method="POST" class="w-full flex flex-col gap-6">
     {% csrf_token %}
 <div class="flex flex-col gap-2">

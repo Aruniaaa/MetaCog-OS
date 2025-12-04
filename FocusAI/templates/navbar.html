@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FocusAI{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        :root {
+          --bg-dark-cognitive-void: #0D0F14;
+          --primary-deep-neural-blue: #fe7474;
+          --accent-1-midnight-indigo: #c7b7ff;
+          --secondary-synapse-pink: #ffa8a8;
+          --text-main-cognitive-ink: #ffffff;
+        }
+        .gradient-bg {
+          background-image: radial-gradient(circle at top, rgba(254, 116, 116, 0.1), transparent 40%);
+        }
+        .card-gradient-bg {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        html {
+          scroll-behavior: smooth;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "background-dark": "var(--bg-dark-cognitive-void)",
+                "primary": "var(--primary-deep-neural-blue)",
+                "accent-1": "var(--accent-1-midnight-indigo)",
+                "secondary": "var(--secondary-synapse-pink)",
+                "text-main": "var(--text-main-cognitive-ink)",
+              },
+              fontFamily: {
+                display: ["Space Grotesk", "sans-serif"],
+              },
+              borderRadius: {
+                DEFAULT: "0.5rem",
+                lg: '0.75rem',
+                xl: '1rem',
+              },
+            },
+          },
+        };
+    </script>
+
+    <style>
+        body {
+          font-family: 'Space Grotesk', sans-serif;
+        }
+        .icon-bg {
+          background-color: rgba(254, 116, 116, 0.1);
+        }
+    </style>
+
+    <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        :root {
+          --bg-dark-cognitive-void: #0D0F14;
+          --primary-deep-neural-blue: #fe7474;
+          --accent-1-midnight-indigo: #c7b7ff;
+          --secondary-synapse-pink: #ffa8a8;
+          --text-main-cognitive-ink: #ffffff;
+        }
+        .gradient-bg {
+          background-image: radial-gradient(circle at top, rgba(254, 116, 116, 0.1), transparent 40%);
+        }
+        .card-gradient-bg {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        html {
+          scroll-behavior: smooth;
+        }
+
+        /* Add these chart bar styles */
+        .chart-bar {
+            background: linear-gradient(to top, #fe7474, #c7b7ff);
+            transition: all 0.3s ease;
+        }
+
+        .chart-bar:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.02);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(254, 116, 116, 0.6);
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-background-dark text-text-main">
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-white/10 px-10 py-5">
+        <div class="flex items-center gap-4">
+            <img src="{% static 'assets/vinca.png' %}" class="h-8 w-8" alt="vinca" />
+            <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">FocusAI</h2>
+        </div>
+
+        <nav class="hidden lg:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
+            <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:timer'%}">Timer</a>
+            <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:summarization'%}">Summarization</a>
+            <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:to-do'%}">To-Do</a>
+            <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:stats'%}">Stats</a>
+        </nav>
+
+        <div class="hidden md:flex items-center gap-6">
+            <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:home'%}">Home</a>
+            <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:contact'%}">Contact Us</a>
+            <a class="text-white/70 hover:text-white transition-colors" href="{% url 'focusai:settings'%}">Settings</a>
+        </div>
+        <div class="flex items-center gap-6 md:hidden">
+            <button class="text-white/70 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-3xl">menu</span>
+            </button>
+        </div>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

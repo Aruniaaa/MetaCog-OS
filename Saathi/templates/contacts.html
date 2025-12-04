@@ -1,85 +1,26 @@
-<!DOCTYPE html>
+{% extends 'navbar-saathi.html' %}
 {% load static %}
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Saathi - Contact Us</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-<style type="text/css">
-    .material-icons {
-      font-family: 'Material Icons';
-      font-weight: normal;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-feature-settings: 'liga';
-      -webkit-font-smoothing: antialiased;
+
+{% block title %}Contact Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    .icon-lg {
+        font-size: 2.5rem;
     }
-  </style>
-<script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "background-light": "#f0f2f5",
-            'accent-1': '#c7b7ff',
-            'text-main-light': '#1e293b',
-            'text-main-dark': '#ffffff',
-            'text-secondary-light': '#64748b',
-            'text-secondary-dark': '#94a3b8',
-            'card-light': '#ffffff',
-            'card-dark': '#1e1b24',
-            "primary": "#fe7474",
-            "secondary": "#c7b7ff",
-            "background-dark": "#0D0F14",
-            "tv-pink": "#fe7474",
-            "tv-blue": "#c7b7ff",
-          },
-          fontFamily: {
-            display: ["Space Grotesk", "sans-serif"],
-          },
-          borderRadius: {
-            DEFAULT: "0.75rem",
-          },
-        },
-      },
-    };
-  </script>
-</head>
-<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-main-dark">
-<div class="flex flex-col min-h-screen">
-<header class="w-full px-8 py-6">
-  <nav class="container mx-auto flex justify-between items-center relative">
-    <div class="flex items-center gap-4">
-      <a class="flex items-center gap-3" href="{% url 'saathi:home' %}">
-        <img src="{% static 'flower.png' %}" class="h-10 w-10" />
-        <span class="text-2xl font-bold text-text-main-light dark:text-text-main-dark">Saathi</span>
-      </a>
-    </div>
-    
-    <div class="hidden md:flex items-center space-x-8 text-text-secondary-light dark:text-text-secondary-dark absolute left-1/2 transform -translate-x-1/2 mr-24">
-      <a class="hover:text-primary transition-colors" href="{% url 'saathi:chat' %}">Chat</a>
-      <a class="hover:text-primary transition-colors" href="{% url 'saathi:quiz_gen' %}">Make a Quiz</a>
-      <a class="hover:text-primary transition-colors" href="{% url 'saathi:progress' %}">Progress</a>
-      <a class="hover:text-primary transition-colors" href="{% url 'saathi:take_quiz' %}">Take a Quiz</a>
-    </div>
-    
-    <div class="flex items-center space-x-8 text-text-secondary-light dark:text-text-secondary-dark">
-      <a class="font-medium text-text-main-light dark:text-text-main-dark hover:text-primary transition-colors" href="{% url 'saathi:home' %}">Home</a>
-    </div>
-  </nav>
-</header>
+
+    .text-tv-pink {
+        color: #fe7474;
+    }
+
+    .text-tv-blue {
+        color: #c7b7ff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
 <main class="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
 <div class="layout-content-container flex flex-col w-full max-w-5xl mx-auto items-center gap-12">
 <div class="flex flex-col items-center text-center gap-4">
@@ -88,14 +29,14 @@
 </div>
 <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 <a class="group bg-white/[.03] p-6 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 flex flex-col gap-4 text-center items-center" href="#">
-<span class="material-symbols-outlined icon-lg text-tv-pink">mail</span>
+<span class="material-icons-outlined icon-lg text-tv-pink">mail</span>
 <div class="flex flex-col">
 <h2 class="text-xl font-bold text-white">Email</h2>
 <p class="text-white/70">charulabs@gmail.com</p>
 </div>
 </a>
 <a class="group bg-white/[.03] p-6 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 flex flex-col gap-4 text-center items-center" href="#">
-<span class="material-symbols-outlined icon-lg text-tv-blue">hub</span>
+<span class="material-icons-outlined icon-lg text-tv-blue">hub</span>
 <div class="flex flex-col">
 <h2 class="text-xl font-bold text-white">Linktree</h2>
 <p class="text-white/70">https://linktr.ee/charulabs</p>
@@ -125,6 +66,6 @@
 </div>
 </div>
 </main>
-</div>
 
-</body></html>
+
+{% endblock %}

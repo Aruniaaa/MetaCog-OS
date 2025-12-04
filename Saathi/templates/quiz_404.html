@@ -1,62 +1,10 @@
-<!DOCTYPE html>
+{% extends 'navbar-saathi.html' %}
 {% load static %}
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Saathi - Quiz</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-<script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            primary: "#fe7474",
-            "background-light": "#ffffff",
-            "background-dark": "#0D0F14",
-            "accent-1": "#c7b7ff",
-            secondary: "#ffa8a8",
-            "text-main": "#ffffff",
-            "text-light": "#1f2937",
-            "text-dark": "#ffffff"
-          },
-          fontFamily: {
-            display: ["Space Grotesk", "sans-serif"],
-          },
-          borderRadius: {
-            DEFAULT: "8px",
-          },
-        },
-      },
-    };
-    </script>
-</head>
-<body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark antialiased">
-<div class="flex flex-col min-h-screen">
-<header class="w-full  px-4 sm:px-6 lg:px-8 py-6 ">
-<nav class="flex items-center justify-between">
-<a class="flex items-center space-x-2" href="{% url 'saathi:home' %}">
-<img src="{% static 'flower.png' %}" class="h-10 w-10" />
-<span class="font-bold text-xl text-text-light dark:text-text-dark">Saathi</span>
-</a>
-<div class="hidden md:flex items-center justify-center flex-1 space-x-6 ">
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:chat' %}">Chat</a>
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:progress' %}">Progress</a>
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:quiz_gen' %}">Make a Quiz</a>
-</div>
-<div class="hidden md:flex items-center space-x-6">
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:home' %}">Home</a>
-<a class="text-gray-300 hover:text-primary transition-colors" href="{% url 'saathi:contact' %}">Contact Us</a>
-</div>
-<button class="md:hidden">
-<span class="material-icons-outlined text-text-light dark:text-text-dark">menu</span>
-</button>
-</nav>
-</header>
+
+{% block title %}Quizzes Await!{% endblock %}
+
+{% block content %}
+
 <main class="flex-grow flex items-center justify-center">
 <section class="text-center py-16 md:py-20 px-4 sm:px-6 lg:px-8">
 <div class="max-w-4xl mx-auto">
@@ -90,6 +38,5 @@
             </p>
 </div>
 </footer>
-</div>
 
-</body></html>
+{% endblock %}

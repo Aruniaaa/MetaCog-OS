@@ -33,7 +33,7 @@ def login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         user_id = request.session.get('user_id')
         if not user_id:
-            return HttpResponseRedirect('saathi/login')
+            return HttpResponseRedirect('/saathi/login')
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
@@ -328,6 +328,7 @@ def progress(request):
 
 
         return render(request, "progress.html", context)
+
 
 
 

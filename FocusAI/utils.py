@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 import os
 from .pytorch_cv_detect import phone_detector
-from portal.models import FocusStats
+from portal.models import FocusStats, Profile
 from dotenv import load_dotenv
 from google import genai
 import markdown
@@ -103,7 +103,12 @@ def get_weekly_breakdown(stats):
     daily_avg_hours = round(total_focus_hours / 7 if total_focus_hours > 0 else 0)
 
 
-    weekly_goal_hour = 30
+    
+    user_id = stats.user_id
+
+    user = Profile.objects.get(supabase_id=user_id)
+
+    weekly_goal_hour = user.weekly_goal_hour
     goal_completion = min(100, (total_focus_hours / weekly_goal_hour) * 100) if total_focus_hours > 0 else 0
     phoneInterruptions =  stats.times_phone_stopped_week / total_focus_hours
 
@@ -173,7 +178,6 @@ def format_time_display(total_hours):
 
 
 def initialize_phone_detection():
-    print("In the utils.py func to load")
     model_path = r'FocusAI/cnn-models/pytorch_model2.pt'
     phone_detector.load_model(model_path)
 
