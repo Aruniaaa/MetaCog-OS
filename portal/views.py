@@ -179,7 +179,6 @@ def make_report(request):
             """
 
 
-
         completion = client.chat.completions.create(
         model="gpt-oss-120b",
         messages=[

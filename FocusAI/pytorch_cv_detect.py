@@ -33,11 +33,9 @@ class PhoneDetector:
         self.detection_buffer = deque(maxlen=self.required_detections)
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        print("the phone detector instance is connected! ✅✅")
 
     def load_model(self, model_path):
         try:
-            print("TRYNA LOADDDDD")
             if model_path:
                 self.model = torch.load(model_path, weights_only=False, map_location=self.device)
             else:
@@ -45,7 +43,7 @@ class PhoneDetector:
 
             self.model.eval()
 
-            print("MODEL LOADED!! 🫦🫦🫦🫦🫦")
+            print("MODEL LOADED!!")
 
             return True
 

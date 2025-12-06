@@ -4,12 +4,12 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
-from .utils import process, return_prompt, get_quiz
+from .utils import process, return_prompt, get_quiz, return_valid_quiz
 from supabase import Client, create_client
 import os
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
-from portal.models import Profile, Quizzes
+from portal.models import Profile, Quizzes, WrongQuestions
 from dotenv import load_dotenv
 from functools import wraps
 from markdown_it import MarkdownIt
@@ -110,10 +110,18 @@ class ChatAPI(View):
 
 @login_required
 def quiz_gen(request):
+
+    existing_quiz = request.session.get("quiz", None)
     
     if request.method == "GET":
-        return render(request, "quiz_gen.html", {})
-    elif request.method == "POST":
+
+        if existing_quiz is not None:
+            return render(request, "quiz_gen.html", {"existing_quiz" : True})
+        else:
+            return render(request, "quiz_gen.html", {"existing_quiz": False})
+
+
+    elif request.method == "POST" and existing_quiz is None:
         try:
             content = request.POST.get('content', None)
             file = request.FILES.get('uploaded_file', None)
@@ -147,8 +155,15 @@ def quiz_gen(request):
                 print(e)
                 return render(request, "quiz_gen.html", {"message" : str(e)})
 
+    elif existing_quiz is not None:
+        return render(request, "quiz_gen.html", {
+            "generated": True
+        })
+
+
 @login_required
 def take_quiz(request):
+
     
     if request.method == "GET":
         quiz = request.session.get("quiz")
@@ -160,10 +175,16 @@ def take_quiz(request):
 
 
 @login_required
-def submit_quiz(request): 
+def submit_quiz(request):
+
     if request.method == "POST":
         score = 0
         wrong_indices = []
+        data_to_store = {}
+
+        wrong_questions_list = []
+        options = []
+        answers = []
 
         quiz = request.session.get("quiz")
         questions = len(quiz)
@@ -201,10 +222,14 @@ def submit_quiz(request):
 
                 user_answer = quiz[index]["options"][int(request.POST.get(f"question{index + 1}")) - 1]
 
+                wrong_questions_list.append(question)
+                options.append(quiz[index]["options"])
+                answers.append(correct_option)
 
 
                 string = f"\nThe question was : {question} | User's answers was: {user_answer} | Correct answer was: {correct_option}\n"
                 wrong_questions += string
+
                                                
 
             
@@ -238,6 +263,60 @@ def submit_quiz(request):
             agent_response = md.render(agent_response)
 
 
+            data_to_store["questions"] = wrong_questions_list
+            data_to_store["options"] = options
+            data_to_store["answers"] = answers
+
+            profile.wrong_questions_amt += len(wrong_questions_list)
+            print(f"Before generating a quiz automatically, amount of wrong questions: {profile.wrong_questions_amt}\n\n")
+            profile.save()
+
+            new_data = WrongQuestions(
+                user_id=user_id,
+                quiz_id=new_quiz,
+                wrong_questions_data=data_to_store
+            )
+            new_data.save()
+
+            if profile.wrong_questions_amt >= 15:
+
+                i = 1
+                while len(data_to_store["questions"]) < 15:
+
+                    print("Retreiving data from past wrong answers...\n\n")
+
+                    more_data = WrongQuestions.objects.filter(user_id=user_id).exclude(id=new_data.id).select_related('quiz_id').order_by('-quiz_id__timestamp').first()
+
+                    if not more_data:
+                        print("No more past data available")
+                        break
+
+                    past_questions = more_data.wrong_questions_data["questions"]
+                    past_options = more_data.wrong_questions_data["options"]
+                    past_answers = more_data.wrong_questions_data["answers"]
+
+
+                    for idx in range(len(past_questions)):
+                        if len(data_to_store["questions"]) >= 15:
+                            break
+
+
+                        data_to_store["questions"].append(past_questions[idx])
+                        data_to_store["options"].append(past_options[idx])
+                        data_to_store["answers"].append(past_answers[idx])
+
+
+                    if len(data_to_store["questions"]) >= 15:
+                        break
+
+
+                print(f"UPDATED DATA TO ASK QUESTIONS ON: {data_to_store}")
+
+                valid_quiz = return_valid_quiz(data_to_store)
+                request.session["quiz"] = valid_quiz
+                profile.wrong_questions_amt = 0
+                profile.save()
+                print(f"Current amount of wrong questions: {profile.wrong_questions_amt}")
 
             return render(request, "quiz_submit.html", {"username" : username, "score" : score, "prompt": prompt, "total" : questions, "agent_feedback": agent_response})
         

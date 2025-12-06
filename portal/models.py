@@ -49,6 +49,8 @@ class Profile(models.Model):
     last_report_generated = models.DateTimeField(default='1970-01-01 00:00:00')
     last_report_data = models.JSONField(null=True, blank=True)
 
+    wrong_questions_amt = models.IntegerField(null=False, default=0)
+
     def __str__(self):
         return self.username
 
@@ -60,3 +62,10 @@ class Quizzes(models.Model):
     correct_count = models.IntegerField(null=False)
     total_questions = models.IntegerField(null=False)
     accuracy = models.FloatField(null=False)
+
+
+class WrongQuestions(models.Model):
+
+    user_id = models.CharField(max_length=255)
+    quiz_id = models.ForeignKey(Quizzes, on_delete=models.CASCADE)
+    wrong_questions_data =  models.JSONField(null=False)
