@@ -23,9 +23,9 @@ class PhoneDetector:
         self.frame_count = 0
         self.start_time = time.time()
 
-        self.confidence_threshold = 0.9
-        self.required_detections = 5
-        self.sustained_duration = 3.0
+        self.confidence_threshold = 0.6
+        self.required_detections = 3
+        self.sustained_duration = 2.0
 
         self.confidence_history = deque(maxlen=10)
         self.high_confidence_count = 0
@@ -43,7 +43,6 @@ class PhoneDetector:
 
             self.model.eval()
 
-            print("MODEL LOADED!!")
 
             return True
 
@@ -117,7 +116,6 @@ class PhoneDetector:
             prob = probs.item()
 
             self.confidence = prob
-            print(f"🤓 CONFIDENCE: {self.confidence}:.2f\n")
             self.frame_count += 1
 
             self.confidence_history.append(prob)

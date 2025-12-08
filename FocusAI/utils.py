@@ -78,25 +78,21 @@ def summarize_text(text):
 def get_weekly_breakdown(stats):
 
     days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    daily_hours = [4, 5, 3, 6, 7, 9, 3]
+    daily_hours = []
 
     today = timezone.now().date()
     days_since_monday = today.weekday()
     monday = today - timedelta(days=days_since_monday)
 
-    # Uncomment and fix this section when you want real data:
-    # for i, day in enumerate(days):
-    #     current_day = monday + timedelta(days=i)
-    #
-    #     if current_day == today:
-    #         # Use today's actual focus time
-    #         daily_hours.append(stats.total_focus_time_day / 3600)  # seconds -> hours
-    #     elif current_day < today:
-    #         # Past days - get from database
-    #         daily_hours.append(0)  # Replace with actual database query
-    #     else:
-    #         # Future days
-    #         daily_hours.append(0)
+    for i, day in enumerate(days):
+        current_day = monday + timedelta(days=i)
+
+        if current_day == today:
+            daily_hours.append(stats.total_focus_time_day / 3600)
+        elif current_day < today:
+            daily_hours.append(0)
+        else:
+            daily_hours.append(0)
 
 
     total_focus_hours = sum(daily_hours)
@@ -159,10 +155,10 @@ def get_weekly_breakdown(stats):
             'total_focus_time': format_time_display(total_focus_hours),
             'daily_average_time': format_time_display(daily_avg_hours),
             'longest_session_time': format_time_display(longest_session_hours),
-            'goal_completion_percent': goal_completion,
+            'goal_completion_percent': round(goal_completion, 2),
             'sessions_completed': stats.total_sesh_week,
-            'focus_percent': focus_percentage,
-            'distraction_percent': 100 - focus_percentage,
+            'focus_percent': round(focus_percentage, 2),
+            'distraction_percent': round(100 - focus_percentage, 2),
         }
     }
 
@@ -170,11 +166,16 @@ def get_weekly_breakdown(stats):
 
 
 def format_time_display(total_hours):
-        mins = int((total_hours*60) % 60)
+    if total_hours < 1:
+        mins = int(total_hours * 60)
+        return f"{mins}m"
+    else:
+        hours = int(total_hours)
+        mins = int((total_hours * 60) % 60)
         if mins == 0:
-            return f"{total_hours}h"
+            return f"{hours}h"
         else:
-            return f"{total_hours}h {mins:.2f}m"
+            return f"{hours}h {mins}m"
 
 
 def initialize_phone_detection():

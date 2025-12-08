@@ -378,37 +378,6 @@ def progress(request):
 
         return render(request, "progress.html", context)
 
-"""
-
-Over-writing the progress view with hardcoded values for the demo, 
-this func can easily be removed during actual production/deployment.
-
-"""
-@login_required
-def progress(request):
-    
-    if request.method == "GET":
-
-        context = {
-            'total_quizzes': 42,
-            'total_questions': 378,
-            'improvement': 24.7,
-            'avg_acc': 82.3,
-            'best_acc': 96.5,
-            'streak': 67,
-            'accuracies': json.dumps([
-            94.5, 91.2, 89.7, 93.8, 88.4, 67.67, 92.6, 87.3, 76.2, 89.9,
-            91.8, 0, 93.4, 29.5, 87.1, 92.3, 89.2, 20, 88.9, 91.5,
-            45.9, 90.4, 67, 88, 93.7, 89.5, 91.1, 87, 94.3, 90.8,
-            78, 92.5, 89.3, 93.1, 87.4, 0, 0, 95.6, 90.2, 92.8,
-            89.6, 23.2
-            ])
-        }
-
-
-        return render(request, "progress.html", context)
-
-
 
 
 

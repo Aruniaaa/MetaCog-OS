@@ -246,7 +246,6 @@ def login_view(request):
 
             request.session["user_id"] = user_id
             request.session["username"] = username
-            print("LOGGED INNN")
             return redirect("portal:home")
 
     else:

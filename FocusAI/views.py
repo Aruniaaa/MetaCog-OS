@@ -73,7 +73,7 @@ def settings(request):
 
 
         context = {
-            "detect_phones" : user.detect_tabs,
+            "detect_phones" : user.detect_phones,
             "detect_tabs" : user.detect_tabs,
             "weekly_goal_hour" : user.weekly_goal_hour
         }
