@@ -23,3 +23,5 @@ langchain-anthropic
 langchain_google_genai
 chromadb
 cerebras-cloud-sdk
+torch
+torchvision
