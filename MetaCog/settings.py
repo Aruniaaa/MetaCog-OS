@@ -28,12 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = secret_key
 
-if environment == "development":
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG =  True
 
-ALLOWED_HOSTS = ['metacog-os-production.up.railway.app', 'localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -87,10 +84,14 @@ WSGI_APPLICATION = 'MetaCog.wsgi.application'
 
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'MetaCog',
+        'USER': 'postgres',
+        'PASSWORD': password,
+        'HOST': 'localhost',
+        'PORT': '5432'
+    }
 }
 
 # Password validation
