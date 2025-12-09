@@ -5,14 +5,12 @@ python-dotenv
 supabase
 google-genai
 markdown
-numpy<2
+numpy>=1.24,<2
 psycopg2-binary
 pymupdf
 python-docx
 markdown-it-py
 mdit-py-plugins
-PyMuPDF
-python-docx
 dj_database_url
 gunicorn
 whitenoise
