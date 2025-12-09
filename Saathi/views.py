@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
-from .utils import process, return_prompt, get_quiz, return_valid_quiz
+from .utils import process, return_prompt, get_quiz, return_valid_quiz, store_in_vdb, agent
 from supabase import Client, create_client
 import os
 from django.shortcuts import redirect
@@ -15,7 +15,6 @@ from functools import wraps
 from markdown_it import MarkdownIt
 from mdit_py_plugins.texmath import texmath_plugin
 from datetime import timedelta
-from .utils import store_in_vdb, agent
 
 
 load_dotenv()

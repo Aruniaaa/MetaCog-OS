@@ -179,7 +179,7 @@ def format_time_display(total_hours):
 
 
 def initialize_phone_detection():
-    model_path = r'FocusAI/cnn-models/pytorch_model2.pt'
+    model_path = r'cnn-models/pytorch_model2.pt'
     phone_detector.load_model(model_path)
 
 
