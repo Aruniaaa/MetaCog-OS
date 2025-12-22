@@ -10,6 +10,9 @@ import fitz
 from docx import Document
 from markdown_it import MarkdownIt
 from mdit_py_plugins.texmath import texmath_plugin
+import requests
+import gdown
+
 
 load_dotenv()
 
@@ -106,7 +109,7 @@ def get_weekly_breakdown(stats):
 
     weekly_goal_hour = user.weekly_goal_hour
     goal_completion = min(100, (total_focus_hours / weekly_goal_hour) * 100) if total_focus_hours > 0 else 0
-    phoneInterruptions =  stats.times_phone_stopped_week / total_focus_hours
+    phoneInterruptions =  stats.times_phone_stopped_week 
 
     max_interruption_rate = 3
 
@@ -178,9 +181,6 @@ def format_time_display(total_hours):
             return f"{hours}h {mins}m"
 
 
-def initialize_phone_detection():
-    model_path = r'cnn-models/pytorch_model2.pt'
-    phone_detector.load_model(model_path)
 
 
 def reset_if_needed(stats: FocusStats):

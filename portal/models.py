@@ -65,7 +65,6 @@ class Quizzes(models.Model):
 
 
 class WrongQuestions(models.Model):
-
     user_id = models.CharField(max_length=255)
     quiz_id = models.ForeignKey(Quizzes, on_delete=models.CASCADE)
     wrong_questions_data =  models.JSONField(null=False)

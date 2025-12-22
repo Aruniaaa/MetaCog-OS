@@ -207,7 +207,6 @@ def start_timer(request):
 
         detection_started = False
         if phone_detector.model is not None:
-            print("Model has been loaded and we are calcing the detection started var")
             detection_started = phone_detector.start_detection(user_id)
 
         

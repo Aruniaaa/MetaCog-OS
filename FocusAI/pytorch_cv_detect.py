@@ -6,6 +6,8 @@ import requests
 import logging
 from collections import deque
 import torch
+import os
+import gdown
 
 logger = logging.getLogger(__name__)
 
@@ -34,20 +36,23 @@ class PhoneDetector:
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def load_model(self, model_path):
+    def load_model(self, model_path, file_id):
         try:
-            if model_path:
-                self.model = torch.load(model_path, weights_only=False, map_location=self.device)
+            if not os.path.exists(model_path):
+                os.makedirs(os.path.dirname(model_path), exist_ok=True)
+                url = f"https://drive.google.com/uc?id={file_id}"
+                print("Downloading AI model...")
+                gdown.download(url, model_path, quiet=False)
+                print("AI model downloaded!")
             else:
-                self.model = torch.load('models/pytorch_model1.pt', weights_only=False, map_location=self.device)
+                print("Model file already exists, loading...")
 
+            self.model = torch.load(model_path, weights_only=False, map_location=self.device)
             self.model.eval()
-
-
             return True
 
         except Exception as e:
-            print(f"💀💀 AN EXCEPTION OCCURED WHILE LOADING THE MODEL : {e}")
+            print(f"AN EXCEPTION OCCURED WHILE LOADING THE MODEL : {e}")
             logger.error(f"Failed to load model: {e}")
             return False
 
@@ -272,4 +277,4 @@ class PhoneDetector:
 
 
 phone_detector = PhoneDetector()
-phone_detector.load_model('FocusAI/cnn-models/pytorch_model2.pt')
+phone_detector.load_model('FocusAI/cnn-models/pytorch_model.pt', "15MspUrBVWKi4Wsh5JHRsEpWIMrtX-D28")

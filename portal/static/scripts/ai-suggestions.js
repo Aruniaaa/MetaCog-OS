@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(`Today is: ${day}`);
 
 
-    if (day === 'Monday') {
+    if (day === 'Sunday') {
         console.log("About to fetch!!");
         fetch(MAKE_REPORT_URL)
         .then(res => res.json())

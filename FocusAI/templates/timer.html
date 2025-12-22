@@ -237,15 +237,15 @@ function showPhoneWarning(count) {
 
     let message;
     if (count === 1) {
-        message = 'Caught you. Get back to work. • First distraction';
+        message = 'Caught you. Get back to work. | First distraction';
     } else if (count === 2) {
-        message = 'Again? Stay focused! • 2nd time today';
+        message = 'Again? Stay focused! | 2nd time today';
     } else if (count === 3) {
-        message = 'Third strike! Focus up. • 3 distractions today';
+        message = 'Third strike! Focus up. | 3 distractions today';
     } else if (count <= 5) {
-        message = `Really? Focus time! • ${count} times today`;
+        message = `Really? Focus time! | ${count} times today`;
     } else if (count <= 10) {
-        message = `This is getting serious... • ${count} times today`;
+        message = `This is getting serious... | ${count} times today`;
     } else {
         message = `${count} distractions today. You can do better!`;
     }
@@ -269,7 +269,6 @@ function startPhoneDetectionPolling() {
                 detect_tabs = data.detect_tabs;
 
                 if (data.should_pause) {
-                    console.log("PAUSING THE TIMERRRRRRR 🫦🫦");
                     audio.play();
                     phoneInterruptionCount = data.stats.interruptions_today;
                     showPhoneWarning(phoneInterruptionCount);
