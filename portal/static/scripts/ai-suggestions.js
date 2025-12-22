@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const d = new Date();
     const day = weekday[d.getDay()];
+    const shouldGenerateNew = day === 'Sunday';
 
     const sectionMap = {
         "Suggestions & Feedback": 'suggestions_and_feedback',
@@ -36,52 +37,50 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    console.log(`Today is: ${day}`);
 
 
-    if (day === 'Sunday') {
-        console.log("About to fetch!!");
-        fetch(MAKE_REPORT_URL)
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
+    console.log("About to make the fetch req!")
+    fetch(`${MAKE_REPORT_URL}?generate_new=${shouldGenerateNew}`)
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
 
-            if (data)
-            {
-                populateList(
-                    sectionMap["Suggestions & Feedback"],
-                    data.report["Suggestions & Feedback"],
-                    "No new feedback available."
-                );
+        if (data)
+        {
+            populateList(
+                sectionMap["Suggestions & Feedback"],
+                data.report["Suggestions & Feedback"],
+                "No new feedback available."
+            );
 
-                populateList(
-                    sectionMap["Tips & Trick"],
-                    data.report["Tips & Trick"],
-                    "No tips available today."
-                );
+            populateList(
+                sectionMap["Tips & Trick"],
+                data.report["Tips & Trick"],
+                "No tips available today."
+            );
 
-                populateList(
-                    sectionMap["Recommended Resources"],
-                    data.report["Recommended Resources"],
-                    "No resources currently recommended."
-                );
+            populateList(
+                sectionMap["Recommended Resources"],
+                data.report["Recommended Resources"],
+                "No resources currently recommended."
+            );
 
-                populateList(
-                    sectionMap["Suggested Priorities for Next Weeks"],
-                    data.report["Suggested Priorities for Next Weeks"],
-                    "No new priorities suggested."
-                );
-                
-                populateList(
-                    sectionMap["Pending Tasks & How to get them dones"],
-                    data.report["Pending Tasks & How to get them dones"],
-                    "Nothing to see here!"
-                );
-            }
-      
-        })
-        .catch(err => {
-            console.error("Error fetching or processing report data:", err);
-        });
-    }
+            populateList(
+                sectionMap["Suggested Priorities for Next Weeks"],
+                data.report["Suggested Priorities for Next Weeks"],
+                "No new priorities suggested."
+            );
+            
+            populateList(
+                sectionMap["Pending Tasks & How to get them dones"],
+                data.report["Pending Tasks & How to get them dones"],
+                "Nothing to see here!"
+            );
+        }
+
+    })
+    .catch(err => {
+        console.error("Error fetching or processing report data:", err);
+    });
+
 });

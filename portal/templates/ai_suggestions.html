@@ -149,7 +149,7 @@
     const MAKE_REPORT_URL = "{% url 'portal:make_report' %}"; 
 </script>
 
-<script src="{% static 'scripts/ai-suggestions.js' %}"></script>
+<script src="{% static 'scripts/ai-suggestions.js' %}?v={% now 'U' %}"></script>
 
 </body></html>
 

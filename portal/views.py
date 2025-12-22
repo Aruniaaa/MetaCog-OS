@@ -139,9 +139,14 @@ def make_report(request):
 
     user = Profile.objects.get(supabase_id=user_id)
 
-    if user.last_report_generated is None or (timezone.now() - user.last_report_generated) > timedelta(days=7):
+    generate_new = request.GET.get('generate_new', 'false').lower() == 'true'
+ 
+    should_generate = generate_new or (
+        user.last_report_generated is None or 
+        (timezone.now() - user.last_report_generated) > timedelta(days=7)
+    )
 
-
+    if should_generate:
     
         stats = FocusStats.objects.filter(user_id=user_id).first()
         profile = Profile.objects.filter(supabase_id=user_id).first()

@@ -17,7 +17,6 @@ whitenoise
 langchain==1.1.0
 langchain-core
 langchain-community
-langchain-anthropic
 langchain_google_genai
 chromadb
 cerebras-cloud-sdk
