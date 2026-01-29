@@ -173,7 +173,7 @@ MetaCog OS isn't just two separate apps—it's a unified system.
    
    # AI API Keys
    GEMINI_KEY=your_gemini_api_key
-   CEREBRAS_API_KEY=your_cerebras_api_key
+   GROQ_API=your_groq_api_key
    
    # Django Settings
    DEBUG=True
@@ -280,5 +280,6 @@ All rights reserved.
 ## Acknowledgments
 
 Built with frustration, caffeine, and the belief that learning should build you up, not make you dependent.
+
 
 **MetaCog OS: Focus. Learn. Grow.**
