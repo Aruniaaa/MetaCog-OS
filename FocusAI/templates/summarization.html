@@ -89,7 +89,7 @@
 
 
 {% block extra_js %}
-
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
    <script>
     document.addEventListener('DOMContentLoaded', function() {
         const textArea = document.getElementById('text-to-summarize');
@@ -111,7 +111,7 @@
         const form = document.getElementById('summarizeForm');
 
         form.addEventListener('submit', async function (e) {
-            e.preventDefault(); // STOP the page from navigating to the JSON
+            e.preventDefault(); 
 
             hideError();
             setLoadingState(true);
@@ -196,7 +196,7 @@
             }
         });
 
-        // TODO: fix this, we support pdf and .docx too
+      
         async function extractTextFromFile(file) {
             const type = file.type;
 
@@ -254,7 +254,7 @@
             // Create summary content
             const summaryContent = document.createElement('div');
             summaryContent.className = 'text-white/90 fade-in leading-relaxed';
-            summaryContent.innerHTML = summary;
+            summaryContent.innerHTML = marked.parse(summary);
 
             // Clear and add new content
             summaryOutput.innerHTML = '';

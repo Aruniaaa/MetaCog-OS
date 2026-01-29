@@ -86,7 +86,7 @@ class ChatAPI(View):
 
             request.session["context"] = context
 
-            md = MarkdownIt().use(texmath_plugin)
+            md = MarkdownIt("commonmark").use(texmath_plugin, "math").enable('table')
             bot_response = md.render(bot_response)
 
             return JsonResponse({
@@ -135,6 +135,9 @@ def quiz_gen(request):
             try:
 
                 quiz_dict = json.loads(quiz)
+                if "error" in quiz:
+                    return render(request, "quiz_gen.html", {"message" : "Rate limit reached. Let's try again in a while?"})
+
                 md = MarkdownIt().use(texmath_plugin)
 
                 for i in range(len(quiz_dict)):
@@ -229,9 +232,7 @@ def submit_quiz(request):
                 string = f"\nThe question was : {question} | User's answers was: {user_answer} | Correct answer was: {correct_option}\n"
                 wrong_questions += string
 
-                                               
 
-            
             prompt = f"""Give me a clear explanation for each question I got wrong and help me understand the concept behind the correct answer. 
                 Here are the questions I missed:
 
@@ -378,7 +379,27 @@ def progress(request):
         return render(request, "progress.html", context)
 
 
+@login_required
+def progress(request):
+    if request.method == "GET":
 
+        user_id = request.session.get("user_id")
+        profile = Profile.objects.filter(supabase_id=user_id).first()
+        accuracies = [45, 52, 58, 63, 59, 55, 61, 68, 72, 69, 65, 70, 75, 78, 74, 71, 68, 72, 76, 80, 83, 81, 78, 82,
+                      85, 87, 84, 86, 89, 91, 88]
+
+
+        context = {
+            'total_quizzes': 67,
+            'total_questions': 140,
+            'improvement': 29,
+            'avg_acc': 78.92,
+            'best_acc': 100,
+            'streak': 76,
+            'accuracies': json.dumps(accuracies)
+        }
+
+        return render(request, "progress.html", context)
 
 def login(request):
     if request.method == "GET":

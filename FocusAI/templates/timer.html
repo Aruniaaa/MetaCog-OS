@@ -6,8 +6,8 @@
 {% block content %}
 
 <!-- Main Content -->
-<main class="flex flex-1 flex-col items-center justify-center p-4 pt-8 sm:pt-10 md:pt-12">
-  <div class="flex flex-col items-center gap-8">
+ <main class="flex min-h-screen flex-col items-center justify-center p-4">
+  <div class="flex flex-col items-center gap-10 -mt-12">
 
     <!-- Phone Warning - Now INSIDE the flex container -->
     <div id="phone-warning" class="hidden animate-fade-in">
@@ -42,7 +42,7 @@
     </div>
 
     <!-- Timer Controls -->
-    <div class="flex w-full max-w-md items-center justify-center gap-4">
+    <div class="flex w-full max-w-md items-center justify-between gap-6">
       <button id="start" class="group flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary py-4 px-6 text-base font-bold text-[#0D0F14] transition-all hover:bg-secondary">
         <span class="material-symbols-outlined mr-2">play_arrow</span>
         <span class="truncate">Start</span>

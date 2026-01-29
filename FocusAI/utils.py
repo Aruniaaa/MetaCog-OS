@@ -5,6 +5,7 @@ from .pytorch_cv_detect import phone_detector
 from portal.models import FocusStats, Profile
 from dotenv import load_dotenv
 from google import genai
+from google.genai.errors import ClientError, APIError
 import markdown
 import fitz
 from docx import Document
@@ -16,9 +17,10 @@ import gdown
 
 load_dotenv()
 
-gemini = os.getenv("GEMINI_KEY")
 
-client = genai.Client(api_key=gemini)
+api_key = os.getenv("GEMINI_KEY")
+
+client = genai.Client(api_key=api_key)
 
 def extract_pdf(file):
 
@@ -64,17 +66,29 @@ def summarize_text(text):
     Text to summarize:
     {text}
     """
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompted_query
+        )
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompted_query
-    )
 
+        summarized = response.text
+        md = MarkdownIt("commonmark").use(texmath_plugin, "math").enable('table')
+        bot_response = md.render(summarized)
+        return bot_response
+    except ClientError as e:
+        if e.code == 429:
+            return "## ❗❗ Rate limit reached\n\nPlease slow down and try again in a moment."
+        else:
+            return "## ⚠️ Something went wrong\n\nPlease try again later."
 
-    summarized = response.text
-    md = MarkdownIt().use(texmath_plugin)
-    bot_response = md.render(summarized)
-    return bot_response
+    except APIError:
+        return "## ⚠️ API issue\n\nUnable to complete the request right now."
+
+    except Exception:
+        return "## ⚠️ Unexpected error\n\nAn unexpected error occurred. Please try again later."
+
 
 
 

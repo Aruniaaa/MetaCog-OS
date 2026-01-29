@@ -1,8 +1,13 @@
 import fitz
+import groq
+from groq import Groq
+from google import genai
+from google.genai.errors import ClientError
 import docx
 from google import genai
 from dotenv import load_dotenv
 import os
+import json
 from langchain_core.documents import Document
 from langchain.agents import create_agent
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -15,6 +20,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 load_dotenv()
 
 api_key = os.getenv("GEMINI_KEY")
+groq_api = os.getenv("GROQ_API")
 
 embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=api_key)
 
@@ -24,15 +30,10 @@ vectorstore = Chroma(
     embedding_function=embeddings
 )
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", google_api_key=api_key)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", api_key=api_key)
 
-
-load_dotenv()
-
-api_key  = os.getenv("GEMINI_KEY")
-
-client = genai.Client(api_key=api_key)
-
+client = Groq(api_key=groq_api)
+client_gemini = genai.Client(api_key=api_key)
 
 
 def process(query, context):
@@ -80,12 +81,22 @@ def process(query, context):
         Query: {query}
         """ 
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompted_query
-        )
+        try:
+            completion = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompted_query
+                }
+            ]
+        ) 
 
-        return response.text
+            return completion.choices[0].message.content
+        
+        except groq.RateLimitError as e:
+            return "## ❗❗ Rate limit reached\n\nPlease slow down and try again in a moment."
+    
     except Exception as e:
         print(e)
 
@@ -140,8 +151,6 @@ def return_prompt(file=None, text=None):
         content += "\n" + text
 
     
-
-    
     prompt = f"""You are generating a multiple-choice quiz strictly based on the provided content.
 
         Rules:
@@ -179,15 +188,24 @@ def return_prompt(file=None, text=None):
 
 def get_quiz(prompt):
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash-lite",
-        contents=prompt,
-        config={
-        "response_mime_type": "application/json"
-        }
-    )
+    try:
+        response = client_gemini.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
 
-    return response.text
+
+        return response.text
+    
+    except ClientError as e:
+        if e.code == 429:
+            error_payload = {
+                "error": {
+                    "type": "rate_limit",
+                    "message": "Rate limit exceeded. Please try again later."
+                }
+            }
+            return json.dumps(error_payload)
 
 
 
@@ -218,17 +236,24 @@ def retrieve_similar_quizzes(user_id: str, wrong_questions: str):
         A list of similar quiz documents from the vector database.
     """
 
+    prompt = f"""
+        Here is some info on a quiz.
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash-lite",
-        contents=f"""Here is some info on a quiz, return a 3-5 word query for a RAG search to get similar quizzes so that
-        an AI agent can give the user feedback on similar quizzes and analyse where they went wrong. Return words like 'algebra' or 'trignometry' or 'economics'.
-        Output ONLY the query, no explanation, no punctuation.
-        Here is the quiz info : {wrong_questions}"""
-        )
+        Return a 3-5 word query for a RAG search to get similar quizzes so that
+        an AI agent can give the user feedback on similar quizzes and analyse where they went wrong.
+
+        Return words like 'algebra', 'trigonometry', or 'economics'.
+        Output ONLY the query. No explanation. No punctuation.
+
+        Quiz info:
+        {wrong_questions}
+        """
+
+    response = llm.invoke(prompt)
+    query = response.content.strip()
 
     results = vectorstore.similarity_search(
-        query=response.candidates[0].content.parts[0].text,
+        query=query,
         k=3,
         filter={"user_id": user_id}
     )
@@ -265,8 +290,6 @@ def return_valid_quiz(quiz):
                         }
 
         valid_quiz.append(dict_question)
-
-    print(f"Valid quiz is: {valid_quiz}\n\n")
 
     return valid_quiz
 

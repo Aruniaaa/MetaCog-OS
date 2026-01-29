@@ -3,14 +3,14 @@ altair
 django
 python-dotenv
 supabase
-google-genai
 markdown
-numpy>=1.24,<2
+numpy>=1.26.2
 psycopg2-binary
 pymupdf
 python-docx
 markdown-it-py
 mdit-py-plugins
+markdown_it.extensions
 dj_database_url
 gunicorn
 whitenoise
@@ -19,7 +19,6 @@ langchain-core
 langchain-community
 langchain_google_genai
 chromadb
-cerebras-cloud-sdk
-torch
-torchvision
 gdown
+google
+groq

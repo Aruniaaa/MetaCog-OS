@@ -5,7 +5,7 @@ import os
 from .models import Profile, Quizzes, Tasks, FocusStats
 from functools import wraps
 from django.http import HttpResponseRedirect, JsonResponse
-from cerebras.cloud.sdk import Cerebras
+from groq import Groq
 import json
 from datetime import timedelta, datetime
 from django.utils import timezone 
@@ -15,14 +15,12 @@ load_dotenv()
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
-
+groq_api = os.getenv("GROQ_API")
 
 supabase: Client = create_client(url, key)
 
 
-client = Cerebras(
-        api_key=os.environ.get("CEREBRAS_API_KEY")
-    )
+client = Groq(api_key=groq_api)
 
 report_schema = {
   "type": "object",
@@ -62,8 +60,10 @@ report_schema = {
     "Suggestions & Feedback",
     "Tips & Trick",
     "Recommended Resources",
+    "Pending Tasks & How to get them done",
     "Suggested Priorities for Next Weeks"
-  ]
+  ],
+  "additionalProperties": False,
 }
 
 def login_required(view_func):
@@ -131,11 +131,11 @@ def ai_suggestions(request):
         }
 
         return render(request, "ai_suggestions.html", context)
-    
+
+
 def make_report(request):
     
     user_id = request.session.get("user_id")
-
 
     user = Profile.objects.get(supabase_id=user_id)
 
@@ -185,17 +185,17 @@ def make_report(request):
 
 
         completion = client.chat.completions.create(
-        model="gpt-oss-120b",
-        messages=[
-            {"role": "system", "content": prompt},
-        ],
-        response_format={
-            "type": "json_schema", 
-            "json_schema": {
-                "name": "report schema",
+            model="openai/gpt-oss-120b",
+            messages=[
+                {"role": "system", "content": prompt},
+            ],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                "name": "report_schema",
                 "strict": True,
                 "schema": report_schema
-            }
+                }
         })
 
         report = json.loads(completion.choices[0].message.content)
@@ -288,7 +288,6 @@ def signup_view(request):
 
             request.session["user_id"] = user.id
             request.session["username"] = username
-            print("SIGNED UPPPP")
             return redirect("portal:home")
 
     else:
