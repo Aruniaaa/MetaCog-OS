@@ -20,6 +20,7 @@ load_dotenv()
 password = os.getenv("DB_PASS")
 environment = os.getenv("ENVIRONMENT", default='production')
 secret_key = os.getenv("SECRET_KEY")
+debug_val = os.getenv("DEBUG")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = secret_key
 
-DEBUG =  True
+DEBUG = debug_val
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 

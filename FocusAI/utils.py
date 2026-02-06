@@ -1,18 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 import os
-from .pytorch_cv_detect import phone_detector
 from portal.models import FocusStats, Profile
 from dotenv import load_dotenv
 from google import genai
 from google.genai.errors import ClientError, APIError
-import markdown
 import fitz
 from docx import Document
 from markdown_it import MarkdownIt
 from mdit_py_plugins.texmath import texmath_plugin
-import requests
-import gdown
 
 
 load_dotenv()

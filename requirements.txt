@@ -10,7 +10,6 @@ pymupdf
 python-docx
 markdown-it-py
 mdit-py-plugins
-markdown_it.extensions
 dj_database_url
 gunicorn
 whitenoise
