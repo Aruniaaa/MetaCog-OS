@@ -21,3 +21,5 @@ chromadb
 gdown
 google
 groq
+torch
+torchvision
