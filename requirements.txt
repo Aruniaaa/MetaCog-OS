@@ -23,3 +23,4 @@ google
 groq
 torch
 torchvision
+langchain_chroma

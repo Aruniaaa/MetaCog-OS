@@ -3,6 +3,56 @@
 
 {% block title %}FocusAI - Summarization {% endblock %}
 
+{% block extra_css %}
+    <style>
+       .markdown-content {
+            line-height: 1.6;
+        }
+
+        .markdown-content h2 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .markdown-content h3 {
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .markdown-content p {
+            margin-bottom: 16px;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+        }
+
+        .markdown-content li {
+            margin-bottom: 8px;
+        }
+
+        .markdown-content code {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .markdown-content strong {
+            font-weight: 600;
+        }
+
+        .markdown-content hr {
+            margin: 24px 0;
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
 
 
@@ -254,7 +304,7 @@
             // Create summary content
             const summaryContent = document.createElement('div');
             summaryContent.className = 'text-white/90 fade-in leading-relaxed';
-            summaryContent.innerHTML = marked.parse(summary);
+            summaryContent.innerHTML = summary
 
             // Clear and add new content
             summaryOutput.innerHTML = '';
